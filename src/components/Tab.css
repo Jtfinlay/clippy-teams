@@ -1,0 +1,9 @@
+.clippyDialog {
+    max-height: 100%;
+    height: 100%;
+    margin: 20px;
+}
+
+.clippyDialog .Dialog__content {
+    max-height: 100%;
+}

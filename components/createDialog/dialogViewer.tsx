@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, Dialog, Flex } from '@fluentui/react-northstar';
 import TextClip from './textClip';
+import VideoClip from './videoClip';
 
 export default function DialogViewer() {
     const [open, setOpen] = React.useState(false);
@@ -12,7 +13,7 @@ export default function DialogViewer() {
             title: "Text"
         },
         {
-            component: <TextClip onClose={() => setOpen(false)} />,
+            component: <VideoClip onClose={() => setOpen(false)} />,
             title: "Record"
         }
     ];

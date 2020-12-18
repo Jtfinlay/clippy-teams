@@ -411,6 +411,11 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
+"@types/recordrtc@^5.6.3":
+  version "5.6.3"
+  resolved "https://registry.yarnpkg.com/@types/recordrtc/-/recordrtc-5.6.3.tgz#78aabd2cc17c6ab8e2ad8d883e0e5e7b4d0859ce"
+  integrity sha512-z6FIgpJYjoens0hwAh2jIz5mDdWDtDUDEgqu89Q5Jl1tkoopRl20lVO1ixtdo/a3wIOuIdVPMvRwEylZhLNOiw==
+
 "@uifabric/merge-styles@^7.19.1":
   version "7.19.1"
   resolved "https://registry.yarnpkg.com/@uifabric/merge-styles/-/merge-styles-7.19.1.tgz#446b3da48ce9925d1649edd0fc232221974b00c9"
@@ -4033,6 +4038,11 @@ readdirp@~3.5.0:
   integrity sha512-cMhu7c/8rdhkHXWsY+osBhfSy0JikwpHK/5+imo+LpeasTF8ouErHrlYkwT0++njiyuDvc7OFY5T3ukvZ8qmFQ==
   dependencies:
     picomatch "^2.2.1"
+
+recordrtc@^5.6.1:
+  version "5.6.1"
+  resolved "https://registry.yarnpkg.com/recordrtc/-/recordrtc-5.6.1.tgz#da876700fa149bbb230df7591a020e2c43de01c8"
+  integrity sha512-UU7Fd9IIuz60TPq4GgL1qtgo2mzEZWzPxEraNe32eo4/ndjKmuj715HB7W1k63G09teM1dXJYubPEmLkQ/lq5Q==
 
 regenerator-runtime@^0.13.4:
   version "0.13.7"

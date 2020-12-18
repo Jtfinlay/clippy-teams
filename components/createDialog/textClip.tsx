@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Dialog, Flex, FlexItem } from '@fluentui/react-northstar';
+import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
 import { CloseIcon, SendIcon } from '@fluentui/react-icons-northstar';
 import { fabric } from 'fabric';
 

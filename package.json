@@ -11,8 +11,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fluentui/react-icons-northstar": "^0.51.3",
     "@fluentui/react-northstar": "^0.51.3",
     "@microsoft/teams-js": "^1.8.0",
+    "@types/fabric": "^4.2.0",
+    "fabric": "^4.2.0",
     "next": "10.0.3",
     "react": "17.0.1",
     "react-dom": "17.0.1"

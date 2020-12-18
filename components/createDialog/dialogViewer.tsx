@@ -19,16 +19,19 @@ export default function DialogViewer() {
 
     return (
         <Dialog
-            style={{ width: '500px', height: '782px', overflowY: 'inherit', padding: 0 }}
+            style={{ width: '500px', height: '782px', padding: 0, display: 'flex', overflowY: 'hidden' }}
             open={open}
             onOpen={() => setOpen(true)}
             trigger={<Button content="Make a clippy"/>}
             content={
                 <Flex column style={{width: '500px', height: '750px'}}>
-                    {mediaOptions[index].component}
-                    <Flex hAlign="center">
+                    <Box style={{ height: '100%' }}>
+                        {mediaOptions[index].component}
+                    </Box>
+                    <Flex hAlign="center" gap="gap.small">
                         {mediaOptions.map((media, i) => (
                             <Button
+                                text
                                 key={i}
                                 onClick={() => setIndex(i)}
                                 content={media.title}

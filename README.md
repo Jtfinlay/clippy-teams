@@ -1,27 +1,30 @@
-# Tabs
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-Tabs are Teams-aware webpages embedded in Microsoft Teams. A channel/group tab delivers content to channels and group chats, and are a great way to create collaborative spaces around dedicated web-based content.
+## Getting Started
 
-## Prerequisites
--  [NodeJS](https://nodejs.org/en/)
+First, run the development server:
 
--  [M365 developer account](https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/prepare-your-o365-tenant) or access to a Teams account with the appropriate permissions to install an app.
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-## Build and Run
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-In the project directory, execute:
+You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-`npm install`
+## Learn More
 
-`npm start`
+To learn more about Next.js, take a look at the following resources:
 
-## Deploy to Teams
-Start debugging the project by hitting the `F5` key or click the debug icon in Visual Studio Code and click the `Start Debugging` green arrow button.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### NOTE: First time debug step
-On the first time running and debugging your app you need allow the localhost certificate.  After starting debugging when Chrome is launched and you have installed your app it will fail to load.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-- Open a new tab `in the same browser window that was opened`
-- Navigate to `https://localhost:3000/tab`
-- Click the `Advanced` button
-- Select the `Continue to localhost`
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

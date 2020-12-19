@@ -6,6 +6,11 @@ export type BlobCorrected = Blob & {
     buffer: Buffer,
 }
 
+export enum FileType {
+    VIDEO = 'video',
+    IMAGE = 'image'
+} 
+
 export function getTable(): Promise<TableService> {
     const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
     const tableSvc = azure.createTableService(AZURE_STORAGE_CONNECTION_STRING);
@@ -22,13 +27,14 @@ export function getTable(): Promise<TableService> {
     });
 }
 
-export async function addTableEntry(userId: string, blobName: string) {
+export async function addTableEntry(userId: string, blobName: string, fileType: FileType) {
     const tableSvc = await getTable();
 
     var entry = {
         PartitionKey: {'_': userId },
         RowKey: { '_': Date.now().toString() },
         BlobName: { '_': blobName },
+        FileType: { '_': fileType },
     };
 
     return new Promise<void>((res, rej) => {

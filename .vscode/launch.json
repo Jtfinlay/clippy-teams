@@ -14,6 +14,13 @@
             "request": "launch",
             "url": "https://localhost:3000/tab",
             "webRoot": "${workspaceFolder}"
-        }
+        }, 
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "NodeJS Debug",
+            "skipFiles": ["<node_internals>/**"],
+            "port": 9229
+          }
     ]
 }

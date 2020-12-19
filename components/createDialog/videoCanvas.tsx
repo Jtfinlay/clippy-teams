@@ -34,8 +34,9 @@ export default function VideoCanvas(props: IOwnProps) {
                 chunks.push(e.data);
             };
             recorderRef.current.onstop = (e) => {
-                let blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+                let blob = new Blob(chunks);
                 let blobUrl = URL.createObjectURL(blob);
+                props.onPlayback(blob);
 
                 videoRef.current.src = videoRef.current.srcObject = null;
                 videoRef.current.src = blobUrl;

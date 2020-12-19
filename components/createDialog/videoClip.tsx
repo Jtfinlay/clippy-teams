@@ -32,7 +32,7 @@ export default function VideoClip(props: IOwnProps) {
 
     const showPrimaryAction = videoState === VIDEO_STATE.PREVIEW || videoState === VIDEO_STATE.RECORDING;
 
-    async function onSubmitVideo(blob: Blob) {
+    async function onSubmitVideo() {
         if (uploading) return;
         
         setUploading(true);

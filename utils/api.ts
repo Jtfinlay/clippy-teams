@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-export async function uploadVideo(blob: Blob): Promise<{result: any, error: string}> {
+export async function uploadVideo(blob: Blob): Promise<{result?: any, error?: string}> {
     try {
-        debugger;
         const formData = new FormData();
-        formData.append("video", "test");
-        formData.append("size", blob.size);
+        formData.append("video", blob);
         const response = await axios.post(
             '/api/upload-video',
             formData,
@@ -14,12 +12,12 @@ export async function uploadVideo(blob: Blob): Promise<{result: any, error: stri
             }
         );
         
-        if (response.status !== 200) {
-            return { error: `Failure updating exchange. Please try again later. Code: ${response.status}`};
+        if (response.status !== 201) {
+            return { error: `Failure uploading video. Please try again later. Code: ${response.status}`};
         }
 
         return { result: response.data };
     } catch (err) {
-        return { error: `Failure updating exchange. Please try again later.`};
+        return { error: `Failure uploading video. Please try again later.`};
     }
 }

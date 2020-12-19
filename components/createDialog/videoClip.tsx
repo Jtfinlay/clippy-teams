@@ -37,10 +37,10 @@ export default function VideoClip(props: IOwnProps) {
         
         setUploading(true);
         setError('');
-        
-        const {result: any, error: string} = await uploadVideo(blob);
-        if (error) {
-            setError(error);
+
+        const response = await uploadVideo(blob);
+        if (response.error) {
+            setError(response.error);
         } else {
             // do something animated to show success
             props.onClose();

@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import initMiddleware from '../../lib/init-middleware';
-import { addTableEntry, BlobCorrected, FileType, uploadBlob } from '../../lib/storage';
+import { updateTablesForBlob, BlobCorrected, FileType, uploadBlob } from '../../lib/storage';
 
 const upload = multer();
 
@@ -49,7 +49,7 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse) => 
         const blobName = `${uuidv4()}.webm`;
 
         await uploadBlob(blobName, blob);
-        await addTableEntry("admin", blobName, FileType.VIDEO);
+        await updateTablesForBlob("admin", blobName, FileType.VIDEO);
 
         res.statusCode = 201;
         res.end();

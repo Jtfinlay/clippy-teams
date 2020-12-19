@@ -1,11 +1,23 @@
+import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Box, Flex } from '@fluentui/react-northstar';
+import axios, { CancelTokenSource } from 'axios';
+import { Box, Button, Flex } from '@fluentui/react-northstar';
 import DialogViewer from '../components/createDialog/dialogViewer';
 import styles from '../styles/Home.module.css'
 import AvatarList from '../components/avatarList';
+import {fetchVideos} from '../utils/api';
 
 export default function Home() {
+    const cancelToken = React.useRef<CancelTokenSource>(axios.CancelToken.source());
+
+    React.useEffect(() => {
+        const token = cancelToken.current;
+        return () => {
+            token.cancel();
+        }
+    }, [cancelToken]);
+
     return (
         <Flex column hAlign="center">
             <Head>
@@ -18,6 +30,7 @@ export default function Home() {
                     <AvatarList />
                     <Box>
                         <DialogViewer />
+                        <Button content="Fetch" onClick={() => fetchVideos(cancelToken.current.token)}/>
                     </Box>
                 </Flex>
             </main>

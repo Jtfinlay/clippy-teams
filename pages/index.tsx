@@ -1,8 +1,9 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { Box, Button, Flex } from '@fluentui/react-northstar';
+import { Box, Flex } from '@fluentui/react-northstar';
 import DialogViewer from '../components/createDialog/dialogViewer';
 import styles from '../styles/Home.module.css'
+import AvatarList from '../components/avatarList';
 
 export default function Home() {
     return (
@@ -12,11 +13,9 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main style={{ padding: '5rem 0' }}>
+            <main style={{ padding: '5rem 0', width: '60rem' }}>
                 <Flex column gap="gap.large" hAlign="center">
-                    <Flex>
-                        <span>New clippies will be available here. Show profile pic with outlined border</span>
-                    </Flex>
+                    <AvatarList />
                     <Box>
                         <DialogViewer />
                     </Box>

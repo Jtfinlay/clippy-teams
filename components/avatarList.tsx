@@ -24,6 +24,7 @@ export default function AvatarList() {
                     key={i}
                     {...u}
                     size="larger"
+                    status="success"
                 />
             ))}
         </Flex>

@@ -15,12 +15,11 @@
     "@fluentui/react-northstar": "^0.51.3",
     "@microsoft/teams-js": "^1.8.0",
     "@types/fabric": "^4.2.0",
-    "@types/recordrtc": "^5.6.3",
+    "axios": "^0.21.0",
     "fabric": "^4.2.0",
     "next": "10.0.3",
     "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "recordrtc": "^5.6.1"
+    "react-dom": "17.0.1"
   },
   "devDependencies": {
     "@types/node": "^14.14.14",

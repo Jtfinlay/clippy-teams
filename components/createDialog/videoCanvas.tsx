@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box } from '@fluentui/react-northstar';
-import RecordRTC from 'recordrtc';
 import { fabric } from 'fabric';
 import { VIDEO_STATE } from './videoClip';
 
@@ -13,58 +12,52 @@ const CAMERA_OPTIONS = {
     }
 };
 
-const _original_initHiddenTextarea = fabric.IText.prototype.initHiddenTextarea;
-fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.prototype */ {
-    // fix for : IText not editable when canvas is in a modal on chrome
-    // https://github.com/fabricjs/fabric.js/issues/5126
-    initHiddenTextarea: function () {
-        _original_initHiddenTextarea.call(this);
-        this.canvas.wrapperEl.appendChild(this.hiddenTextarea);
-    }
-});
-
 interface IOwnProps {
-    recordState: VIDEO_STATE
+    recordState: VIDEO_STATE,
+    onPlayback: (blob: Blob) => void,
 }
 
 export default function VideoCanvas(props: IOwnProps) {
     const mediaStreamRef = React.useRef(null);
-    const rtcRecorderRef = React.useRef(null);
+    const recorderRef = React.useRef(null);
     const canvasRef = React.useRef(null);
     const videoRef = React.useRef(null);
 
     React.useEffect(() => {
-        if (!rtcRecorderRef.current || !props.recordState) return;
+        if (!recorderRef.current || !props.recordState) return;
 
         function startRecording() {
             videoRef.current.muted = true;
-            rtcRecorderRef.current.startRecording();
+
+            let chunks = [];
+            recorderRef.current.ondataavailable = (e) => {
+                chunks.push(e.data);
+            };
+            recorderRef.current.onstop = (e) => {
+                let blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+                let blobUrl = URL.createObjectURL(blob);
+
+                videoRef.current.src = videoRef.current.srcObject = null;
+                videoRef.current.src = blobUrl;
+                videoRef.current.muted = false;
+            };
+            recorderRef.current.start();
         }
 
         function stopRecording() {
-            rtcRecorderRef.current.stopRecording();
-        }
-
-        function startPlayback() {
-            rtcRecorderRef.current.stopRecording(() => {
-                let blob = rtcRecorderRef.current.getBlob();
-
-                videoRef.current.src = videoRef.current.srcObject = null;
-                videoRef.current.src = URL.createObjectURL(blob);
-                videoRef.current.muted = false;
-            });
+            recorderRef.current.stop();
         }
 
         function startPreview() {
             videoRef.current.muted = true;
-            videoRef.current.srcObject = mediaStreamRef.current;
             videoRef.current.src = videoRef.current.srcObject = null;
+            videoRef.current.srcObject = mediaStreamRef.current;
         }
 
         if (props.recordState === VIDEO_STATE.RECORDING) {
             startRecording();
         } else if (props.recordState === VIDEO_STATE.PLAYBACK) {
-            startPlayback();
+            stopRecording();
         } else {
             stopRecording();
             startPreview();
@@ -95,10 +88,7 @@ export default function VideoCanvas(props: IOwnProps) {
 
                 mediaStreamRef.current = localMediaStream;
                 videoRef.current.srcObject = localMediaStream;
-                rtcRecorderRef.current = new RecordRTC(localMediaStream, {
-                    mimeType: 'video/webm',
-                    type: 'video'
-                });
+                recorderRef.current = new MediaRecorder(localMediaStream);
 
                 canvas.add(webcam);
                 webcam.moveTo(0);
@@ -122,7 +112,7 @@ export default function VideoCanvas(props: IOwnProps) {
                 }
             });
             mediaStreamRef.current = null;
-            rtcRecorderRef.current = null;
+            recorderRef.current = null;
             canvas.clear();
             canvas.dispose();
         };

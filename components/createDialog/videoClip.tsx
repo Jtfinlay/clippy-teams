@@ -2,8 +2,9 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
 import { CallRecordingIcon, CloseIcon, PauseThickIcon, SendIcon } from '@fluentui/react-icons-northstar';
+import { uploadVideo } from '../../utils/api';
 
-// VideoCanvas uses RecordRTC and user media, which needs browser apis
+// VideoCanvas uses webcam, which needs browser apis
 const VideoCanvas = dynamic(
     () => import('./videoCanvas'),
     { ssr: false}
@@ -25,8 +26,28 @@ export default function VideoClip(props: IOwnProps) {
     const timerRef = React.useRef(null);
     const [videoState, setVideoState] = React.useState(VIDEO_STATE.PREVIEW);
     const [progress, setProgress] = React.useState(0);
+    const [blob, setBlob] = React.useState(null);
+    const [uploading, setUploading] = React.useState(false);
+    const [error, setError] = React.useState('');
 
     const showPrimaryAction = videoState === VIDEO_STATE.PREVIEW || videoState === VIDEO_STATE.RECORDING;
+
+    async function onSubmitVideo(blob: Blob) {
+        if (uploading) return;
+        
+        setUploading(true);
+        setError('');
+        
+        const {result: any, error: string} = await uploadVideo(blob);
+        if (error) {
+            setError(error);
+        } else {
+            // do something animated to show success
+            props.onClose();
+        }
+
+        setUploading(false);
+    }
 
     function stopRecording() {
         setProgress(0);
@@ -66,10 +87,12 @@ export default function VideoClip(props: IOwnProps) {
     
     return (
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
-            <VideoCanvas recordState={videoState}/>
+            <VideoCanvas recordState={videoState} onPlayback={blob => setBlob(blob)} />
 
             <Flex style={{ padding: '10px', top: 0, position: 'absolute', width: 'calc(100% - 20px)' }}>
-                {videoState === VIDEO_STATE.PLAYBACK &&  <Button icon={<SendIcon/>} content={"Send Clip"} /> }
+                {videoState === VIDEO_STATE.PLAYBACK && (
+                    <Button icon={<SendIcon/>} content={"Send Clip"} onClick={() => onSubmitVideo()} />
+                )}
                 <FlexItem push>
                     <Button icon={<CloseIcon />} text iconOnly title="Close" onClick={props.onClose}/>
                 </FlexItem>

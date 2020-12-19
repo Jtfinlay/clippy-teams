@@ -7,5 +7,5 @@ Fairly generic implementation that can be ported to other applications.
 Uses Next.JS, start by setting up your [env variables](https://nextjs.org/docs/basic-features/environment-variables):
 
 ```
-AZURE_STORAGE_CONNECTION_STRING=<ConnectionString from blob storage>
+AZURE_STORAGE_CONNECTION_STRING=UseDevelopmentStorage=true
 ```

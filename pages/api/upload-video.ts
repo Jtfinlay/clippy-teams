@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { BlobServiceClient } from '@azure/storage-blob';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import initMiddleware from '../../lib/init-middleware';
+import { addTableEntry, uploadBlob } from '../../lib/storage';
 
 const upload = multer();
 
@@ -38,23 +38,14 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse) => 
 
     try {
         // TODO - should setup post-processing, to assert it is correct video type, aspect ratio, duration, etc.
-
-        const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
-        const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-
-        // TODO - Thinking container per organization
-        const containerName = 'quickstart';
-        const containerClient = blobServiceClient.getContainerClient(containerName);
-
-        const createContainerResponse = await containerClient.createIfNotExists();
+        // Right now we just accept what is passed in, which could lead to storage/security issues.
+        // Note that Multer limits to 1MB file size by default
 
         // Create a unique name for the blob
         const blobName = `${uuidv4()}.webm`;
 
-        // Get a block blob client
-        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-        const uploadBlobResponse = await blockBlobClient.upload(blob.buffer, blob.size);
+        await uploadBlob(blobName, blob);
+        await addTableEntry("admin", blobName);
 
         res.statusCode = 201;
         res.end();

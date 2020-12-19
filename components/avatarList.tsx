@@ -5,6 +5,8 @@ import axios, { CancelTokenSource } from 'axios';
 import classNames from 'classnames';
 import { fetchVideos } from '../utils/api';
 
+const avatarSize = { width: '64px', height: '64px' };
+
 export default function AvatarList() {
     const [fetching, setFetching] = React.useState(false);
     const [error, setError] = React.useState('');
@@ -60,8 +62,8 @@ export default function AvatarList() {
                 />
             ))}
 
-            {fetching && <Loader />}
-            {!fetching && <Button style={{ width: '64px', height: '64px' }} circular icon={<SyncIcon/>} onClick={() => refresh()}/>}
+            {fetching && <Loader style={avatarSize} />}
+            {!fetching && <Button style={avatarSize} circular icon={<SyncIcon/>} onClick={() => refresh()}/>}
         </Flex>
     )
 }

@@ -33,7 +33,7 @@ export async function fetchVideos(cancelToken: CancelToken): Promise<{ result?: 
             }
         );
         
-        if (response.status !== 201) {
+        if (response.status !== 200) {
             return { error: `Failure fetching videos. Please try again later. Code: ${response.status}`};
         }
 

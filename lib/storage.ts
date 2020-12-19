@@ -35,7 +35,7 @@ export interface IFetchEntriesResponse {
     users: IFetchUserResponse[]
 }
 
-interface IFetchUserResponse {
+export interface IFetchUserResponse {
     id: string,
     entries: { date: string, sasUrl: string }[]
 }

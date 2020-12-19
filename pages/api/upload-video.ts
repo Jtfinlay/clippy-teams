@@ -18,9 +18,15 @@ type NextApiRequestWithFormData = NextApiRequest & {
 export const config = {
     api: {
         bodyParser: false,
-    },
+    }
 }
 
+/**
+ * Upload a video to blob storage.
+ * 
+ * POST /api/upload-video
+ * Expects multipart/form-data input with a single file in webm format.
+ */
 export default async (req: NextApiRequestWithFormData, res: NextApiResponse) => {
     await multerAny(req, res);
 
@@ -30,11 +36,13 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse) => 
         return;
     }
 
+    // TODO - Authentication
+
     const blob: BlobCorrected = req.files[0];
 
     try {
         // TODO - should setup post-processing, to assert it is correct video type, aspect ratio, duration, etc.
-        // Right now we just accept what is passed in, which could lead to storage/security issues.
+        // Right now we just accept what is passed in, which could lead to storage/security/integrity issues.
         // Note that Multer limits to 1MB file size by default
 
         // Create a unique name for the blob

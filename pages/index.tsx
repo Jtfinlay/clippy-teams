@@ -2,12 +2,52 @@ import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { Box, Flex } from '@fluentui/react-northstar';
-import DialogViewer from '../components/createDialog/dialogViewer';
-import styles from '../styles/Home.module.css'
+import axios, { CancelTokenSource } from 'axios';
+import { fetchVideos } from '../utils/api';
 import AvatarList from '../components/avatarList';
+import ClipDialog from '../components/clipDialog';
+import CreateContent from '../components/createDialog/createContent';
+import ViewContent from '../components/viewDialog/viewContent';
+import styles from '../styles/Home.module.css'
+
+enum DIALOG_STATE {
+    CLOSED = 'closed',
+    VIEW = 'view',
+    CREATE = 'create'
+}
 
 export default function Home() {
-    const [open, setOpen] = React.useState(false);
+    const [dialogState, setDialogState] = React.useState(DIALOG_STATE.CLOSED);
+    const [activeUser, setActiveUser] = React.useState('');
+    const [fetching, setFetching] = React.useState(false);
+    const [error, setError] = React.useState('');
+    const [users, setUsers] = React.useState([]);
+    const cancelToken = React.useRef<CancelTokenSource>(axios.CancelToken.source());
+
+    async function refresh() {
+        if (fetching) return;
+
+        setFetching(true);
+        const response = await fetchVideos(cancelToken.current.token);
+        if (response.error) {
+            setError(response.error);
+        } else {
+            setUsers(response.result!.users);
+        }
+
+        setFetching(false);
+    }
+
+    React.useEffect(() => {
+        refresh();
+    }, []);
+
+    React.useEffect(() => {
+        const token = cancelToken.current;
+        return () => {
+            token.cancel();
+        }
+    }, [cancelToken]);
 
     return (
         <Flex column hAlign="center">
@@ -19,11 +59,27 @@ export default function Home() {
             <main style={{ padding: '5rem 0', width: '60rem' }}>
                 <Flex column gap="gap.large" hAlign="center">
                     <AvatarList
-                        createClippy={() => setOpen(true)}
-                        viewUserClippy={(id) => {}}
+                        createClippy={() => setDialogState(DIALOG_STATE.CREATE)}
+                        viewUserClippy={(id) => { setActiveUser(id); setDialogState(DIALOG_STATE.VIEW) }}
+                        refresh={() => refresh()}
+                        users={users}
+                        fetching={fetching}
+                        error={error}
                     />
+
                     <Box>
-                        <DialogViewer open={open} setOpen={(v) => setOpen(v)}/>
+                        <ClipDialog open={dialogState === DIALOG_STATE.VIEW || dialogState === DIALOG_STATE.CREATE}>
+                            <>
+                                {dialogState === DIALOG_STATE.CREATE && <CreateContent close={() => setDialogState(DIALOG_STATE.CLOSED)}/>}
+                                {dialogState === DIALOG_STATE.VIEW && (
+                                    <ViewContent
+                                        close={() => setDialogState(DIALOG_STATE.CLOSED)}
+                                        users={users}
+                                        activeUser={activeUser}
+                                    />
+                                )}
+                            </>
+                        </ClipDialog>
                     </Box>
                 </Flex>
             </main>

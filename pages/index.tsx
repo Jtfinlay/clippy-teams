@@ -18,7 +18,7 @@ enum DIALOG_STATE {
 
 export default function Home() {
     const [dialogState, setDialogState] = React.useState(DIALOG_STATE.CLOSED);
-    const [activeUser, setActiveUser] = React.useState('');
+    const [selectedUser, setSelectedUser] = React.useState('');
     const [fetching, setFetching] = React.useState(false);
     const [error, setError] = React.useState('');
     const [users, setUsers] = React.useState([]);
@@ -60,7 +60,7 @@ export default function Home() {
                 <Flex column gap="gap.large" hAlign="center">
                     <AvatarList
                         createClippy={() => setDialogState(DIALOG_STATE.CREATE)}
-                        viewUserClippy={(id) => { setActiveUser(id); setDialogState(DIALOG_STATE.VIEW) }}
+                        viewUserClippy={(id) => { setSelectedUser(id); setDialogState(DIALOG_STATE.VIEW) }}
                         refresh={() => refresh()}
                         users={users}
                         fetching={fetching}
@@ -75,7 +75,7 @@ export default function Home() {
                                     <ViewContent
                                         close={() => setDialogState(DIALOG_STATE.CLOSED)}
                                         users={users}
-                                        activeUser={activeUser}
+                                        activeUser={selectedUser}
                                     />
                                 )}
                             </>

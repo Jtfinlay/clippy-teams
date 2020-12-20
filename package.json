@@ -9,6 +9,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
+    "teams": "node server.js",
     "build": "next build",
     "start": "next start"
   },

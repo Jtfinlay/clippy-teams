@@ -18,6 +18,7 @@ enum DIALOG_STATE {
 }
 
 export default function Home() {
+    const [content, setContext] = React.useState({});
     const [dialogState, setDialogState] = React.useState(DIALOG_STATE.CLOSED);
     const [selectedUser, setSelectedUser] = React.useState('');
     const [fetching, setFetching] = React.useState(false);
@@ -40,6 +41,10 @@ export default function Home() {
     }
 
     React.useEffect(() => {
+        microsoftTeams.initialize();
+        microsoftTeams.getContext((context) => {
+            setContext(context);
+        });
         refresh();
     }, []);
 
@@ -49,8 +54,6 @@ export default function Home() {
             token.cancel();
         }
     }, [cancelToken]);
-
-    microsoftTeams.initialize();
 
     return (
         <Flex column hAlign="center">

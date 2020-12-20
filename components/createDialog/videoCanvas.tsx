@@ -89,12 +89,14 @@ export default function VideoCanvas(props: IOwnProps) {
 
                 mediaStreamRef.current = localMediaStream;
                 videoRef.current.srcObject = localMediaStream;
+                videoRef.current.play(); // Chrome browser needs this to play hidden video
                 recorderRef.current = new MediaRecorder(localMediaStream);
 
                 canvas.add(webcam);
                 webcam.moveTo(0);
             } catch (e) {
                 // block will be hit if user selects "no" for browser "allow webcam access" prompt
+                console.error(e);
             }
         };
 
@@ -107,7 +109,7 @@ export default function VideoCanvas(props: IOwnProps) {
         });
 
         return () => {
-            videoRef.current && videoRef.current.srcObject.getTracks().forEach(track => {
+            mediaStreamRef.current.getTracks().forEach(track => {
                 if (track.readyState === 'live') {
                     track.stop();
                 }

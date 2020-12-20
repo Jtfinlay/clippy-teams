@@ -1,13 +1,19 @@
 import React from 'react';
-import { Avatar, Button, Flex, Loader } from '@fluentui/react-northstar';
+import { Button, Flex, Loader, Text } from '@fluentui/react-northstar';
 import { SyncIcon } from '@fluentui/react-icons-northstar'
 import axios, { CancelTokenSource } from 'axios';
-import classNames from 'classnames';
 import { fetchVideos } from '../utils/api';
+import StoryAvatar from './storyAvatar';
+import Boop from './boop';
 
-const avatarSize = { width: '64px', height: '64px' };
+const avatarSize = { width: '4rem', height: '4rem' };
 
-export default function AvatarList() {
+interface IOwnProps {
+    createClippy: () => void,
+    viewUserClippy: (userId: string) => void
+}
+
+export default function AvatarList(props: IOwnProps) {
     const [fetching, setFetching] = React.useState(false);
     const [error, setError] = React.useState('');
     const [users, setUsers] = React.useState([]);
@@ -39,31 +45,28 @@ export default function AvatarList() {
     }, [cancelToken]);
 
     const userData = users.map(u => ({
-        image: {
-            src: '/matt.jpg',
-            style: { boxShadow: '0 0 1pt 3pt #6264A7' }
-        },
+        id: u.id,
+        image: '/matt.jpg',
         name: 'Matt',
     }));
 
     return (
-        <Flex gap="gap.small">
-            <Avatar
-                image='./james.jpg'
-                name="James"
-                size="larger"
-            />
+        <Flex column>
+            <Flex gap="gap.small">
+                <StoryAvatar owner image="/james.jpg" name="James" onClick={props.createClippy}/>
 
-            {userData.map((u, i) => (
-                <Avatar
-                    key={i}
-                    {...u}
-                    size="larger"
-                />
-            ))}
+                {userData.map((u, i) => (
+                    <StoryAvatar key={i} active {...u} onClick={() => props.viewUserClippy(u.id)} />
+                ))}
 
-            {fetching && <Loader style={avatarSize} />}
-            {!fetching && <Button style={avatarSize} circular icon={<SyncIcon/>} onClick={() => refresh()}/>}
+                {fetching && <Loader style={avatarSize} />}
+                {!fetching && (
+                    <Boop scale={1.05} timing={200}>
+                        <Button style={avatarSize} circular icon={<SyncIcon/>} onClick={() => refresh()}/>
+                    </Boop>
+                )}
+            </Flex>
+            <Text error content={error}/>
         </Flex>
     )
 }

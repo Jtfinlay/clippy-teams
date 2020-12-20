@@ -3,17 +3,21 @@ import { Box, Button, Dialog, Flex } from '@fluentui/react-northstar';
 import TextClip from './textClip';
 import VideoClip from './videoClip';
 
-export default function DialogViewer() {
-    const [open, setOpen] = React.useState(false);
+interface IOwnProps {
+    open: boolean,
+    setOpen: (open: boolean) => void
+}
+
+export default function DialogViewer(props: IOwnProps) {
     const [index, setIndex] = React.useState(1);
 
     const mediaOptions = [
         {
-            component: <TextClip onClose={() => setOpen(false)} />,
+            component: <TextClip onClose={() => props.setOpen(false)} />,
             title: "Text"
         },
         {
-            component: <VideoClip onClose={() => setOpen(false)} />,
+            component: <VideoClip onClose={() => props.setOpen(false)} />,
             title: "Record"
         }
     ];
@@ -21,9 +25,8 @@ export default function DialogViewer() {
     return (
         <Dialog
             style={{ width: '500px', height: '782px', padding: 0, display: 'flex', overflowY: 'hidden' }}
-            open={open}
-            onOpen={() => setOpen(true)}
-            trigger={<Button content="Make a clippy"/>}
+            open={props.open}
+            onOpen={() => props.setOpen(true)}
             content={
                 <Flex column style={{width: '500px', height: '750px'}}>
                     <Box style={{ height: '100%' }}>

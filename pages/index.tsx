@@ -1,12 +1,13 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Box, Button, Flex, Loader } from '@fluentui/react-northstar';
+import { Box, Flex } from '@fluentui/react-northstar';
 import DialogViewer from '../components/createDialog/dialogViewer';
 import styles from '../styles/Home.module.css'
 import AvatarList from '../components/avatarList';
 
 export default function Home() {
+    const [open, setOpen] = React.useState(false);
 
     return (
         <Flex column hAlign="center">
@@ -17,9 +18,12 @@ export default function Home() {
 
             <main style={{ padding: '5rem 0', width: '60rem' }}>
                 <Flex column gap="gap.large" hAlign="center">
-                    <AvatarList />
+                    <AvatarList
+                        createClippy={() => setOpen(true)}
+                        viewUserClippy={(id) => {}}
+                    />
                     <Box>
-                        <DialogViewer />
+                        <DialogViewer open={open} setOpen={(v) => setOpen(v)}/>
                     </Box>
                 </Flex>
             </main>

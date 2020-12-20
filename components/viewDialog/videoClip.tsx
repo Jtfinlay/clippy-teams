@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
+import { Box } from '@fluentui/react-northstar';
 
 interface IOwnProps {
     url: string

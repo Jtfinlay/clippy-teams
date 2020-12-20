@@ -1,6 +1,6 @@
 Stories experience for Teams Enterprise
 
-Fairly generic implementation that can be ported to other applications.
+Fairly generic implementation that can be ported to other applications. Switch out the Teams & AAD usage for other auth mechanisms.
 
 ## Get Started
 

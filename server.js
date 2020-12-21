@@ -11,8 +11,8 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const httpsOptions = {
   // not secret exposure, as it is local dev signed cert
-  pfx: fs.readFileSync("c:\\certs\\localhost.pfx"),
-  passphrase: 'password1234'
+  pfx: fs.readFileSync("c:\\certs\\devcert.pfx"),
+  passphrase: 'password123'
 };
 app.prepare().then(() => {
   createServer(httpsOptions, (req, res) => {

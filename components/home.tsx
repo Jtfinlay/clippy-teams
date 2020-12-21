@@ -42,9 +42,19 @@ export default function Home() {
 
     React.useEffect(() => {
         microsoftTeams.initialize();
+        const authTokenRequest = {
+            successCallback: function(result) {
+                console.log("Success: " + result);
+            },
+            failureCallback: function(error) {
+                console.log("Failure: " + error); 
+            }
+        };
         microsoftTeams.getContext((context) => {
             setContext(context);
+            microsoftTeams.authentication.getAuthToken(authTokenRequest);
         });
+
         refresh();
     }, []);
 

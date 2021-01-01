@@ -109,7 +109,7 @@ export default function VideoCanvas(props: IOwnProps) {
         });
 
         return () => {
-            mediaStreamRef.current.getTracks().forEach(track => {
+            mediaStreamRef.current?.getTracks().forEach(track => {
                 if (track.readyState === 'live') {
                     track.stop();
                 }

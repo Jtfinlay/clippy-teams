@@ -8,7 +8,6 @@ import { fetchTableEntries } from '../../lib/storage';
  * Query params are optional. They can be used to refresh data (fetch newer) or paginated (fetch by start).
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-
     try {
         // TODO - handle refresh and pagination
         const response = await fetchTableEntries();

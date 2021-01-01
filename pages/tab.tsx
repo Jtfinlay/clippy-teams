@@ -7,6 +7,15 @@ const Home = dynamic(
     { ssr: false}
 );
 
+const TeamsWrapper = dynamic(
+    () => import('../components/teamsWrapper'),
+    { ssr: false}
+);
+
 export default function Index() {
-    return <Home/>;
+    return (
+        <TeamsWrapper>
+            <Home/>
+        </TeamsWrapper>
+    );
 }

@@ -9,10 +9,9 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
-    "teams": "node server.js",
+    "teams": "cross-env NODE_OPTIONS='--inspect' node server.js",
     "build": "next build",
-    "start": "next start",
-    "localtunnel": "lt --port 3000 --subdomain clippyteams"
+    "start": "next start"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.3.0",
@@ -28,7 +27,6 @@
     "azure-storage": "^2.10.3",
     "classnames": "^2.2.6",
     "fabric": "^4.2.0",
-    "localtunnel": "^2.0.0",
     "moment": "^2.29.1",
     "multer": "^1.4.2",
     "next": "10.0.3",

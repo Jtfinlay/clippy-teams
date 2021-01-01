@@ -3,7 +3,6 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { Box, Flex } from '@fluentui/react-northstar';
 import axios, { CancelTokenSource } from 'axios';
-import * as microsoftTeams from "@microsoft/teams-js";
 import { fetchVideos } from '../utils/api';
 import AvatarList from './avatarList';
 import ClipDialog from './clipDialog';
@@ -18,7 +17,6 @@ enum DIALOG_STATE {
 }
 
 export default function Home() {
-    const [content, setContext] = React.useState({});
     const [dialogState, setDialogState] = React.useState(DIALOG_STATE.CLOSED);
     const [selectedUser, setSelectedUser] = React.useState('');
     const [fetching, setFetching] = React.useState(false);
@@ -39,24 +37,6 @@ export default function Home() {
 
         setFetching(false);
     }
-
-    React.useEffect(() => {
-        microsoftTeams.initialize();
-        const authTokenRequest = {
-            successCallback: function(result) {
-                console.log("Success: " + result);
-            },
-            failureCallback: function(error) {
-                console.log("Failure: " + error); 
-            }
-        };
-        microsoftTeams.getContext((context) => {
-            setContext(context);
-            microsoftTeams.authentication.getAuthToken(authTokenRequest);
-        });
-
-        refresh();
-    }, []);
 
     React.useEffect(() => {
         const token = cancelToken.current;

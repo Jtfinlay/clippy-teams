@@ -1,4 +1,4 @@
-import axios, { CancelToken } from 'axios';
+import axios, { AxiosError, CancelToken } from 'axios';
 import { IFetchEntriesResponse } from '../lib/storage';
 
 export async function uploadVideo(blob: Blob, cancelToken: CancelToken): Promise<{result?: any, error?: string}> {
@@ -40,5 +40,26 @@ export async function fetchVideos(cancelToken: CancelToken): Promise<{ result?: 
         return { result: response.data };
     } catch (err) {
         return { error: `Failure fetching videos. Please try again later.`};
+    }
+}
+
+export async function authConsent(clientToken: string, tenantId: string, cancelToken: CancelToken): Promise<{error?: AxiosError }> {
+    try {
+        const response = await axios.post(
+            '/api/auth-consent',
+            { tenantId },
+            {
+                headers: {'Authorization': clientToken },
+                cancelToken
+            }
+        );
+        
+        if (response.status !== 200) {
+            return { error: response.data };
+        }
+
+        return;
+    } catch (err) {
+        return { error: err };
     }
 }

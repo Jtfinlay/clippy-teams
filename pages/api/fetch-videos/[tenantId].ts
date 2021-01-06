@@ -28,7 +28,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             return res.end();
         }
         
-        const response = await fetchTableEntries(tenantId);
+        const response = await fetchTableEntries(token.result.access_token, tenantId);
+
         res.statusCode = 200;
         res.json(response);
     } catch (err) {

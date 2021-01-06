@@ -2,6 +2,7 @@
 import { BlobSASPermissions, BlobSASSignatureValues, BlobServiceClient, ContainerClient, generateAccountSASQueryParameters, generateBlobSASQueryParameters, StorageSharedKeyCredential } from '@azure/storage-blob';
 import azure, { TableService } from 'azure-storage';
 import moment from 'moment';
+import * as graph from './graph';
 
 export type BlobCorrected = Blob & {
     buffer: Buffer,
@@ -37,6 +38,8 @@ export interface IFetchEntriesResponse {
 
 export interface IFetchUserResponse {
     id: string,
+    displayName: string,
+    photoUrl: string,
     entries: { date: string, sasUrl: string }[]
 }
 
@@ -48,10 +51,6 @@ function getUserTableName(tenantId: string) {
 function getUploadTableName(tenantId: string) {
     const tenant = tenantId.replace(/-/gi, '');
     return `uploads${tenant}`
-}
-
-function getContainerName(tenantId: string) {
-    return tenantId.replace(/-/gi, '');
 }
 
 function getTable(tableName: string): Promise<TableService> {
@@ -107,14 +106,14 @@ async function insertEntity(tableName: string, entity: any) {
     });
 }
 
-async function getBlobSasUri(tenantId: string, blobName: string) {
+async function getBlobSasUri(containerName: string, blobName: string) {
     // It doesn't accept ConnectionString, so we need all the values 🙄
     const AZURE_STORAGE_ACCOUNT_NAME = process.env.AZURE_STORAGE_ACCOUNT_NAME;
     const AZURE_STORAGE_ACCOUNT_KEY = process.env.AZURE_STORAGE_ACCOUNT_KEY;
 
-    const containerClient = await getContainer(tenantId);
+    const containerClient = await getContainer(containerName);
     const sasOptions: BlobSASSignatureValues = {
-        containerName: getContainerName(tenantId),
+        containerName: containerName,
         blobName,
         startsOn: new Date(),
         expiresOn: moment().add(1, 'days').toDate(),
@@ -130,11 +129,36 @@ async function getContainer(tenantId: string): Promise<ContainerClient> {
     
     const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 
-    const containerName = getContainerName(tenantId);
+    const containerName = tenantId;
     const containerClient = blobServiceClient.getContainerClient(containerName);
 
     await containerClient.createIfNotExists();
     return containerClient;
+}
+
+async function getProfileImage(token: string, tenantId: string, userId: string): Promise<string> {
+    // if image is cached, return sas url.
+    const containerName = `users-${tenantId}`;
+    const blobName = userId;
+    const containerClient = await getContainer(containerName);
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+    // todo: should ensure images expire so that updates are reflected.
+
+    try {
+        // Apparently this is the best way to tell if the file exists. 🙄
+        await blockBlobClient.getProperties();
+        return getBlobSasUri(containerName, blobName);
+    } catch (err) { }
+
+    const response = await graph.getUserImage(token, userId);
+    if (response.error) {
+        throw response.error;
+    }
+
+    await blockBlobClient.upload(await response.result.arrayBuffer(), response.result.size);
+
+    return getBlobSasUri(containerName, blobName);
 }
 
 /**
@@ -189,7 +213,7 @@ export async function uploadBlob(tenantId: string, blobName: string, blob: BlobC
 /**
  * Fetch the latest videos for the most recent 30 users in past day.
  */
-export async function fetchTableEntries(tenantId: string): Promise<IFetchEntriesResponse> {
+export async function fetchTableEntries(token: string, tenantId: string): Promise<IFetchEntriesResponse> {
     // Fetch top 30 users
     let timeLimit = moment().subtract(1, 'days').valueOf().toString();
     let query = new azure.TableQuery().top(30).where('PartitionKey ge ?', timeLimit);
@@ -197,10 +221,18 @@ export async function fetchTableEntries(tenantId: string): Promise<IFetchEntries
 
     const results: IFetchEntriesResponse = { users: [] };
     for (let index = 0; index < users.length; index++) {
-        // Fetch the user's video entries
         // todo - Promise.all?
         let u = users[index];
-        const user: IFetchUserResponse = { id: u.RowKey._, entries: [] };
+        const user: IFetchUserResponse = { id: u.RowKey._, entries: [], displayName: '', photoUrl: '' };
+
+        // Get user details
+        const userResponse = await graph.getUser(token, user.id);
+        const imageUrl = await getProfileImage(token, tenantId, user.id);
+
+        user.displayName = userResponse.result.displayName;
+        user.photoUrl = imageUrl;
+
+        // Fetch the user's video entries
         query = new azure.TableQuery().top(30).where('PartitionKey eq ? and RowKey ge ?', user.id, timeLimit);
         const entryResults = await getEntities<IEntryStorage>(getUploadTableName(tenantId), query);
 

@@ -76,3 +76,55 @@ export async function getCaller(authToken: string): Promise<{result?: IGraphUser
         return { error: { error: "Unknown failure", error_description: "Unknown failure. Please try again later."}, statusCode: 502 };
     }
 }
+
+export async function getUser(authToken: string, userId: string): Promise<{result?: IGraphUser, error?: AppError, statusCode: number}> {
+
+    try {
+        const response = await fetch(
+            `https://graph.microsoft.com/v1.0/users/${userId}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const json = await response.json();
+        if (response.status !== 200) {
+            return { error: json, statusCode: response.status };
+        }
+
+        return { result: json, statusCode: 200 };
+        
+    } catch (err) {
+        console.error(err.message);
+        return { error: { error: "Unknown failure", error_description: "Unknown failure. Please try again later."}, statusCode: 502 };
+    }
+}
+
+export async function getUserImage(authToken: string, userId: string): Promise<{result?: any, error?: AppError, statusCode: number}> {
+
+    try {
+        const response = await fetch(
+            `https://graph.microsoft.com/v1.0/users/${userId}/photo/$value`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const json = await response.blob();
+        if (response.status !== 200) {
+            return { error: await response.json(), statusCode: response.status };
+        }
+
+        return { result: json, statusCode: 200 };
+        
+    } catch (err) {
+        console.error(err.message);
+        return { error: { error: "Unknown failure", error_description: "Unknown failure. Please try again later."}, statusCode: 502 };
+    }
+}

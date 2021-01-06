@@ -8,6 +8,7 @@ import AvatarList from './avatarList';
 import ClipDialog from './clipDialog';
 import CreateContent from './createDialog/createContent';
 import ViewContent from './viewDialog/viewContent';
+import * as teams from '../utils/teams';
 import styles from '../styles/Home.module.css'
 
 enum DIALOG_STATE {
@@ -28,7 +29,11 @@ export default function Home() {
         if (fetching) return;
 
         setFetching(true);
-        const response = await fetchVideos(cancelToken.current.token);
+        setError('');
+        const context = await teams.getContext();
+        const authToken = await teams.getAuthToken();
+        const response = await fetchVideos(authToken, context.tid, cancelToken.current.token);
+        
         if (response.error) {
             setError(response.error);
         } else {

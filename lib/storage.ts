@@ -40,6 +40,20 @@ export interface IFetchUserResponse {
     entries: { date: string, sasUrl: string }[]
 }
 
+function getUserTableName(tenantId: string) {
+    const tenant = tenantId.replace(/-/gi, '');
+    return `users${tenant}`;
+}
+
+function getUploadTableName(tenantId: string) {
+    const tenant = tenantId.replace(/-/gi, '');
+    return `uploads${tenant}`
+}
+
+function getContainerName(tenantId: string) {
+    return tenantId.replace(/-/gi, '');
+}
+
 function getTable(tableName: string): Promise<TableService> {
     const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
     const tableSvc = azure.createTableService(AZURE_STORAGE_CONNECTION_STRING);
@@ -93,14 +107,14 @@ async function insertEntity(tableName: string, entity: any) {
     });
 }
 
-async function getBlobSasUri(blobName: string) {
+async function getBlobSasUri(tenantId: string, blobName: string) {
     // It doesn't accept ConnectionString, so we need all the values 🙄
     const AZURE_STORAGE_ACCOUNT_NAME = process.env.AZURE_STORAGE_ACCOUNT_NAME;
     const AZURE_STORAGE_ACCOUNT_KEY = process.env.AZURE_STORAGE_ACCOUNT_KEY;
 
-    const containerClient = await getContainer();
+    const containerClient = await getContainer(tenantId);
     const sasOptions: BlobSASSignatureValues = {
-        containerName: 'global',
+        containerName: getContainerName(tenantId),
         blobName,
         startsOn: new Date(),
         expiresOn: moment().add(1, 'days').toDate(),
@@ -111,13 +125,12 @@ async function getBlobSasUri(blobName: string) {
     return `${containerClient.getBlockBlobClient(blobName).url}?${sasToken}`;
 }
 
-async function getContainer(): Promise<ContainerClient> {
+async function getContainer(tenantId: string): Promise<ContainerClient> {
     const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
     
     const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 
-    // TODO - should setup container per organization
-    const containerName = 'global';
+    const containerName = getContainerName(tenantId);
     const containerClient = blobServiceClient.getContainerClient(containerName);
 
     await containerClient.createIfNotExists();
@@ -130,7 +143,7 @@ async function getContainer(): Promise<ContainerClient> {
  * @param blobName The name of the uploaded file
  * @param fileType The type of file uploaded (image or video)
  */
-export async function updateTablesForBlob(userId: string, blobName: string, fileType: FileType) {
+export async function updateTablesForBlob(userId: string, tenantId: string, blobName: string, fileType: FileType) {
     // We use two tables. One partitions <UserId, Timestamp, ...> and the other is <Timestamp, User>.
     // We need first to get all videos for a user, and second to know which order to pull users in.
     // TODO - SQL probably does this in a much smarter way...
@@ -147,16 +160,16 @@ export async function updateTablesForBlob(userId: string, blobName: string, file
         RowKey: {'_': userId },
     };
 
-    await insertEntity('globaluploads', videoEntry);
+    await insertEntity(getUploadTableName(tenantId), videoEntry);
 
     // We only want one copy of the user in the cache table. Fetch all existing, insert the new one, then delete the others.
     // On failure, we could end up with multiple, but we can filter it out and that is better state than there being none.
     const userQuery = new azure.TableQuery().top(50).where('RowKey eq ?', userId);
-    const userCache = await getEntities<IUserStorage>('globalusercache', userQuery);
-    await insertEntity('globalusercache', userEntry);
+    const userCache = await getEntities<IUserStorage>(getUserTableName(tenantId), userQuery);
+    await insertEntity(getUserTableName(tenantId), userEntry);
     for (let index = 0; index < userCache.length; index++) {
         // todo - Promise.all?
-        await deleteEntity('globalusercache', userCache[index]);
+        await deleteEntity(getUserTableName(tenantId), userCache[index]);
     }
 }
 
@@ -165,8 +178,8 @@ export async function updateTablesForBlob(userId: string, blobName: string, file
  * @param blobName The name of the file
  * @param blob The file
  */
-export async function uploadBlob(blobName: string, blob: BlobCorrected): Promise<void> {
-    const containerClient = await getContainer();
+export async function uploadBlob(tenantId: string, blobName: string, blob: BlobCorrected): Promise<void> {
+    const containerClient = await getContainer(tenantId);
 
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
@@ -176,12 +189,11 @@ export async function uploadBlob(blobName: string, blob: BlobCorrected): Promise
 /**
  * Fetch the latest videos for the most recent 30 users in past day.
  */
-export async function fetchTableEntries(): Promise<IFetchEntriesResponse> {
-
+export async function fetchTableEntries(tenantId: string): Promise<IFetchEntriesResponse> {
     // Fetch top 30 users
     let timeLimit = moment().subtract(1, 'days').valueOf().toString();
     let query = new azure.TableQuery().top(30).where('PartitionKey ge ?', timeLimit);
-    const users = await getEntities<IUserStorage>('globalusercache', query);
+    const users = await getEntities<IUserStorage>(getUserTableName(tenantId), query);
 
     const results: IFetchEntriesResponse = { users: [] };
     for (let index = 0; index < users.length; index++) {
@@ -190,12 +202,12 @@ export async function fetchTableEntries(): Promise<IFetchEntriesResponse> {
         let u = users[index];
         const user: IFetchUserResponse = { id: u.RowKey._, entries: [] };
         query = new azure.TableQuery().top(30).where('PartitionKey eq ? and RowKey ge ?', user.id, timeLimit);
-        const entryResults = await getEntities<IEntryStorage>('globaluploads', query);
+        const entryResults = await getEntities<IEntryStorage>(getUploadTableName(tenantId), query);
 
         // foreach entry, generate a sas token to blob storage
         for (let j = 0; j < entryResults.length; j++) {
             const entry = entryResults[j];
-            const sasUrl = await getBlobSasUri(entry.BlobName._);
+            const sasUrl = await getBlobSasUri(tenantId, entry.BlobName._);
             user.entries.push({ date: entry.RowKey._, sasUrl });
         }
 

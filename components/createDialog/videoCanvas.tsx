@@ -6,8 +6,8 @@ import { VIDEO_STATE } from './videoClip';
 const CAMERA_OPTIONS = {
     audio: true,
     video: {
-        width: 720,
-        height: 1080,
+        width: 500,
+        height: 750,
         facingMode: "environment"
     }
 };

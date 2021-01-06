@@ -38,8 +38,8 @@ export default function TeamsWrapper(props: IOwnProps) {
             microsoftTeams.initialize();
             const context = await teams.getContext();
             const authToken = await teams.getAuthToken();
-            const serverToken = await api.authConsent(authToken, context.tid, cancelToken.current.token);
-            if (serverToken.error?.isAxiosError && serverToken.error.response.data.error === 'invalid_grant') {
+            const authConsent = await api.authConsent(authToken, context.tid, cancelToken.current.token);
+            if (authConsent?.error?.isAxiosError && authConsent.error.response.data.error === 'invalid_grant') {
                 setShowConsent(true);
             } else {
                 setReady(true);

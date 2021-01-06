@@ -1,15 +1,18 @@
 import axios, { AxiosError, CancelToken } from 'axios';
 import { IFetchEntriesResponse } from '../lib/storage';
 
-export async function uploadVideo(blob: Blob, cancelToken: CancelToken): Promise<{result?: any, error?: string}> {
+export async function uploadVideo(clientToken: string, tenantId: string, blob: Blob, cancelToken: CancelToken): Promise<{result?: any, error?: string}> {
     try {
         const formData = new FormData();
         formData.append("video", blob);
         const response = await axios.post(
-            '/api/upload-video',
+            `/api/upload-video/${tenantId}`,
             formData,
             {
-                headers: {'Content-Type': 'multipart/form-data' },
+                headers: {
+                    'Authorization': clientToken,
+                    'Content-Type': 'multipart/form-data'
+                },
                 cancelToken
             }
         );
@@ -24,11 +27,12 @@ export async function uploadVideo(blob: Blob, cancelToken: CancelToken): Promise
     }
 }
 
-export async function fetchVideos(cancelToken: CancelToken): Promise<{ result?: IFetchEntriesResponse, error?: string }> {
+export async function fetchVideos(clientToken: string, tenantId: string, cancelToken: CancelToken): Promise<{ result?: IFetchEntriesResponse, error?: string }> {
     try {
         const response = await axios.get(
-            '/api/fetch-videos',
+            `/api/fetch-videos/${tenantId}`,
             {
+                headers: {'Authorization': clientToken },
                 cancelToken
             }
         );

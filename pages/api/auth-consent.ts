@@ -24,7 +24,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const response = await graph.getServerSideToken(clientToken, tenantId);
         res.statusCode = response.statusCode;
-        res.json(response.error);
+        if (response.error) {
+            res.json(response.error);
+        } else {
+            res.end();
+        }
     } catch (err) {
         console.error(err);
         res.statusCode = 500;

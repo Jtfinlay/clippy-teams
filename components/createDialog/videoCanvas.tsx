@@ -8,7 +8,7 @@ const CAMERA_OPTIONS = {
     video: {
         width: 500,
         height: 750,
-        facingMode: "environment"
+        facingMode: "user"
     }
 };
 
@@ -69,7 +69,7 @@ export default function VideoCanvas(props: IOwnProps) {
     React.useEffect(() => {
         const canvas = new fabric.Canvas(canvasRef.current);
 
-        var webcam = new fabric.Image(videoRef.current, {
+        const playback = new fabric.Image(videoRef.current, {
             hasControls: false,
             objectCaching: false,
             lockMovementX: true,
@@ -83,6 +83,16 @@ export default function VideoCanvas(props: IOwnProps) {
             hoverCursor: 'default',
         });
 
+        videoRef.current.addEventListener('loadedmetadata', () => {
+            // Whenever video src changes, check to see if we need to scale the video to fit the canvas.
+            // This solves some issues where during playback, recorded video has different size and preview is cropped.
+            videoRef.current.width = videoRef.current.videoWidth;
+            videoRef.current.height = videoRef.current.videoHeight;
+            playback.set({ width: videoRef.current.videoWidth, height: videoRef.current.videoHeight });
+            playback.scaleToHeight(750);
+            playback.scaleToWidth(500);
+        });
+
         const fetchWebcam = async () => {
             try {
                 const localMediaStream = await navigator.mediaDevices.getUserMedia(CAMERA_OPTIONS);
@@ -92,8 +102,8 @@ export default function VideoCanvas(props: IOwnProps) {
                 videoRef.current.play(); // Chrome browser needs this to play hidden video
                 recorderRef.current = new MediaRecorder(localMediaStream);
 
-                canvas.add(webcam);
-                webcam.moveTo(0);
+                canvas.add(playback);
+                playback.moveTo(0);
             } catch (e) {
                 // block will be hit if user selects "no" for browser "allow webcam access" prompt
                 console.error(e);
@@ -123,8 +133,8 @@ export default function VideoCanvas(props: IOwnProps) {
     
     return (
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
-            <video ref={videoRef} autoPlay muted playsInline loop width="500" height="750" style={{display: 'none'}}></video>
-            <canvas ref={canvasRef} width="500px" height="750px"/>
+            <video ref={videoRef} autoPlay muted playsInline loop width="500" height="750" style={{ display: 'none'}}></video>
+            <canvas ref={canvasRef} width="500" height="750"/>
         </Box>
     );
 }

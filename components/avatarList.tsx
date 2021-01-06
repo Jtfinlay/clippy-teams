@@ -20,8 +20,8 @@ export default function AvatarList(props: IOwnProps) {
 
     const userData = props.users.map(u => ({
         id: u.id,
-        image: '/matt.jpg',
-        name: 'Matt',
+        image: u.photoUrl,
+        name: u.displayName,
     }));
 
     return (

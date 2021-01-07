@@ -2,8 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import initMiddleware from '../../../lib/init-middleware';
-import { updateTablesForBlob, BlobCorrected, FileType, uploadBlob } from '../../../lib/storage';
+import { updateTablesForBlob, uploadBlob } from '../../../lib/storage';
 import * as graph from '../../../lib/graph';
+import { BlobCorrected, FileType } from '../../../lib/schema';
 
 const upload = multer();
 

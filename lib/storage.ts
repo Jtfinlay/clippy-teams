@@ -32,6 +32,7 @@ export interface IFetchUserResponse {
     id: string,
     displayName: string,
     photoUrl: string,
+    userPrincipalName: string,
     entries: { date: string, sasUrl: string, fileType: FileType }[]
 }
 
@@ -209,7 +210,13 @@ export async function fetchUserDetails(token: string, tenantId: string): Promise
     const userResponse = await graph.getLocalUser(token);
     const imageUrl = await getProfileImage(token, tenantId, userResponse.result.id);
 
-    const user: IFetchUserResponse = { id: userResponse.result.id, entries: [], displayName: userResponse.result.displayName, photoUrl: imageUrl };
+    const user: IFetchUserResponse = {
+        id: userResponse.result.id,
+        entries: [],
+        displayName: userResponse.result.displayName,
+        photoUrl: imageUrl, userPrincipalName:
+        userResponse.result.userPrincipalName
+    };
 
     const timeLimit = moment().subtract(1, 'days').valueOf().toString();
     const query = new azure.TableQuery().top(30).where('PartitionKey eq ? and RowKey ge ?', user.id, timeLimit);
@@ -238,7 +245,7 @@ export async function fetchTableEntries(token: string, tenantId: string): Promis
     for (let index = 0; index < users.length; index++) {
         // todo - Promise.all?
         let u = users[index];
-        const user: IFetchUserResponse = { id: u.RowKey._, entries: [], displayName: '', photoUrl: '' };
+        const user: IFetchUserResponse = { id: u.RowKey._, entries: [], displayName: '', photoUrl: '', userPrincipalName: '' };
 
         // Get user details
         // todo - better error handling?
@@ -247,6 +254,7 @@ export async function fetchTableEntries(token: string, tenantId: string): Promis
 
         user.displayName = userResponse.result.displayName;
         user.photoUrl = imageUrl;
+        user.userPrincipalName = userResponse.result.userPrincipalName;
 
         // Fetch the user's video entries
         query = new azure.TableQuery().top(30).where('PartitionKey eq ? and RowKey ge ?', user.id, timeLimit);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
+import { Avatar, Box, Button, Flex, FlexItem, Text } from '@fluentui/react-northstar';
 import { ChevronStartIcon, ChevronEndIcon, CloseIcon} from '@fluentui/react-icons-northstar';
 import Clippy from './clippy';
 import { IFetchUserResponse } from '../../lib/storage';
@@ -38,16 +38,23 @@ export default function ViewContent(props: IOwnProps) {
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
             <Clippy url={clip.sasUrl} type={clip.fileType}/>
 
+            <Flex gap="gap.small" style={{ padding: '10px', top: 0, position: 'absolute', width: '100%', background: 'linear-gradient(#3d3d3e, #3d3d3e00)' }}>
+                <Avatar image={props.user.photoUrl} name={props.user.displayName} size="large" />
+                <Flex column>
+                    <Text color="white" weight="bold" content={props.user.displayName} />
+                    <Text color="white" content={props.user.userPrincipalName} />
+                </Flex>
+
+                <FlexItem push>
+                    <Button icon={<CloseIcon />} text iconOnly title="Close" onClick={props.close}/>
+                </FlexItem>
+            </Flex>
+
+
             <Flex style={{ padding: '10px', bottom: 50, position: 'absolute', width: 'calc(100% - 20px)' }}>
                 <Button icon={<ChevronStartIcon/>} iconOnly title="Previous" onClick={() => prevVideo()}/>
                 <FlexItem push>
                     <Button icon={<ChevronEndIcon/>} iconOnly title="Next" onClick={() => nextVideo()}/>
-                </FlexItem>
-            </Flex>
-
-            <Flex style={{ padding: '10px', top: 0, position: 'absolute', width: 'calc(100% - 20px)' }}>
-                <FlexItem push>
-                    <Button icon={<CloseIcon />} text iconOnly title="Close" onClick={props.close}/>
                 </FlexItem>
             </Flex>
         </Box>

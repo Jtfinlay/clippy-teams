@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
 import { ChevronStartIcon, ChevronEndIcon, CloseIcon} from '@fluentui/react-icons-northstar';
-import VideoClip from './videoClip';
+import Clippy from './clippy';
 import { IFetchUserResponse } from '../../lib/storage';
 
 interface IOwnProps {
@@ -32,9 +32,11 @@ export default function ViewContent(props: IOwnProps) {
         setClipIndex(i => i+1);
     }
 
+    const clip = props.user.entries[clipIndex];
+
     return (
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
-            <VideoClip url={props.user.entries[clipIndex].sasUrl} />
+            <Clippy url={clip.sasUrl} type={clip.fileType}/>
 
             <Flex style={{ padding: '10px', bottom: 50, position: 'absolute', width: 'calc(100% - 20px)' }}>
                 <Button icon={<ChevronStartIcon/>} iconOnly title="Previous" onClick={() => prevVideo()}/>

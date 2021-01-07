@@ -29,13 +29,22 @@ export default function ClipView(props: IOwnProps) {
         indices.push(u.id);
     });
 
+    function nextView() {
+        if (index+1 >= indices.length) {
+            props.close();
+            return;
+        }
+
+        setIndex(i => i+1);
+    }
+
     function renderContent() {
         switch (indices[index]) {
             case 'create':
                 return (
                     <CreateContent
                         close={() => props.close()}
-                        nextView={() => setIndex(i => i+1)}
+                        nextView={() => nextView()}
                     />
                 );
             case 'me': 
@@ -44,7 +53,7 @@ export default function ClipView(props: IOwnProps) {
                         close={props.close}
                         user={localUser}
                         prevUser={() => setIndex(i => i-1)}
-                        nextUser={() => setIndex(i => i+1)}
+                        nextUser={() => nextView()}
                     />
                 );
             default:
@@ -53,7 +62,7 @@ export default function ClipView(props: IOwnProps) {
                         close={props.close}
                         user={props.users.find(u => u.id === indices[index])}
                         prevUser={() => setIndex(i => i-1)}
-                        nextUser={() => setIndex(i => i+1)}
+                        nextUser={() => nextView()}
                     />
                 )
         }

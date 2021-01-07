@@ -3,15 +3,7 @@ import { BlobSASPermissions, BlobSASSignatureValues, BlobServiceClient, Containe
 import azure, { TableService } from 'azure-storage';
 import moment from 'moment';
 import * as graph from './graph';
-
-export type BlobCorrected = Blob & {
-    buffer: Buffer,
-}
-
-export enum FileType {
-    VIDEO = 'video',
-    IMAGE = 'image'
-} 
+import { BlobCorrected, FileType } from './schema';
 
 /**
  * Storage entry that points to file location, by < userId, timestamp >.
@@ -40,7 +32,7 @@ export interface IFetchUserResponse {
     id: string,
     displayName: string,
     photoUrl: string,
-    entries: { date: string, sasUrl: string }[]
+    entries: { date: string, sasUrl: string, fileType: FileType }[]
 }
 
 function getUserTableName(tenantId: string) {
@@ -227,7 +219,7 @@ export async function fetchUserDetails(token: string, tenantId: string): Promise
     for (let j = 0; j < entryResults.length; j++) {
         const entry = entryResults[j];
         const sasUrl = await getBlobSasUri(tenantId, entry.BlobName._);
-        user.entries.push({ date: entry.RowKey._, sasUrl });
+        user.entries.push({ date: entry.RowKey._, sasUrl, fileType: <FileType>entry.FileType._ });
     }
 
     return user;
@@ -264,7 +256,7 @@ export async function fetchTableEntries(token: string, tenantId: string): Promis
         for (let j = 0; j < entryResults.length; j++) {
             const entry = entryResults[j];
             const sasUrl = await getBlobSasUri(tenantId, entry.BlobName._);
-            user.entries.push({ date: entry.RowKey._, sasUrl });
+            user.entries.push({ date: entry.RowKey._, sasUrl, fileType: <FileType>entry.FileType._ });
         }
 
         results.users.push(user);

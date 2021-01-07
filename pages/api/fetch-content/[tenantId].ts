@@ -3,8 +3,8 @@ import { fetchTableEntries } from '../../../lib/storage';
 import * as graph from '../../../lib/graph';
 
 /**
- * Fetch a page of videos.
- * GET /api/fetch-videos/{tenantId}[?newer=<Datetime>][?start=<number>]
+ * Fetch a page of clippies.
+ * GET /api/fetch-content/{tenantId}[?newer=<Datetime>][?start=<number>]
  * 
  * Tenant Id required.
  * Other query params are optional. They can be used to refresh data (fetch newer) or paginated (fetch by start).

@@ -27,10 +27,36 @@ export async function uploadVideo(clientToken: string, tenantId: string, blob: B
     }
 }
 
-export async function fetchVideos(clientToken: string, tenantId: string, cancelToken: CancelToken): Promise<{ result?: IFetchEntriesResponse, error?: string }> {
+export async function uploadImage(clientToken: string, tenantId: string, blob: Blob, cancelToken: CancelToken): Promise<{result?: any, error?: string}> {
+    try {
+        const formData = new FormData();
+        formData.append("image", blob);
+        const response = await axios.post(
+            `/api/upload-image/${tenantId}`,
+            formData,
+            {
+                headers: {
+                    'Authorization': clientToken,
+                    'Content-Type': 'multipart/form-data'
+                },
+                cancelToken
+            }
+        );
+        
+        if (response.status !== 201) {
+            return { error: `Failure uploading video. Please try again later. Code: ${response.status}`};
+        }
+
+        return { result: response.data };
+    } catch (err) {
+        return { error: `Failure uploading video. Please try again later.`};
+    }
+}
+
+export async function fetchContent(clientToken: string, tenantId: string, cancelToken: CancelToken): Promise<{ result?: IFetchEntriesResponse, error?: string }> {
     try {
         const response = await axios.get(
-            `/api/fetch-videos/${tenantId}`,
+            `/api/fetch-content/${tenantId}`,
             {
                 headers: {'Authorization': clientToken },
                 cancelToken
@@ -38,12 +64,12 @@ export async function fetchVideos(clientToken: string, tenantId: string, cancelT
         );
         
         if (response.status !== 200) {
-            return { error: `Failure fetching videos. Please try again later. Code: ${response.status}`};
+            return { error: `Failure fetching clippies. Please try again later. Code: ${response.status}`};
         }
 
         return { result: response.data };
     } catch (err) {
-        return { error: `Failure fetching videos. Please try again later.`};
+        return { error: `Failure fetching clippies. Please try again later.`};
     }
 }
 

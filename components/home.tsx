@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { Box, Flex } from '@fluentui/react-northstar';
 import axios, { CancelTokenSource } from 'axios';
-import { fetchUserInfo, fetchVideos } from '../utils/api';
+import { fetchUserInfo, fetchContent } from '../utils/api';
 import AvatarList from './avatarList';
 import ClipDialog from './clipDialog';
 import * as teams from '../utils/teams';
@@ -37,7 +37,7 @@ export default function Home() {
             setLocalUserId(userResponse.result!.id);
         }
 
-        const response = await fetchVideos(authToken, context.tid, cancelToken.current.token);
+        const response = await fetchContent(authToken, context.tid, cancelToken.current.token);
         
         if (response.error) {
             setError(response.error);

@@ -1,6 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Box, Flex } from '@fluentui/react-northstar';
 import axios, { CancelTokenSource } from 'axios';
 import { fetchUserInfo, fetchContent } from '../utils/api';
@@ -63,6 +64,10 @@ export default function Home() {
     }
 
     React.useEffect(() => {
+        refresh();
+    }, []);
+
+    React.useEffect(() => {
         const token = cancelToken.current;
         return () => {
             token.cancel();
@@ -98,7 +103,10 @@ export default function Home() {
                             />
                         </ClipDialog>
                     </Box>
+
+                    <Image width={250} height={250} src="/clippy.gif"/>
                 </Flex>
+
             </main>
 
             <footer className={styles.footer}>

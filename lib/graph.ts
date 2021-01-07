@@ -19,7 +19,7 @@ export interface ITokenResponse {
  * @param tenantId
  */
 export async function getServerSideToken(clientSideToken: string, tenantId: string): Promise<{result?: ITokenResponse, error?: AppError, statusCode: number }> {
-    const AZURE_APPLICATION_ID = process.env.AZURE_APPLICATION_ID;
+    const AZURE_APPLICATION_ID = process.env.NEXT_PUBLIC_AZURE_APPLICATION_ID;
     const AZURE_APPLICATION_SECRET = process.env.AZURE_APPLICATION_SECRET;
 
     const scopes = ["https://graph.microsoft.com/User.Read"];

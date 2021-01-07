@@ -9,6 +9,7 @@ export default function AuthStart() {
     React.useEffect(() => {
 
         async function setup() {
+            const AZURE_APPLICATION_ID = process.env.NEXT_PUBLIC_AZURE_APPLICATION_ID;
             microsoftTeams.initialize();
             const context = await getContext();
 
@@ -19,7 +20,7 @@ export default function AuthStart() {
 
             // Go to the Azure AD authorization endpoint
             let queryParams = {
-                client_id: "0ca69a0e-3cdd-4f19-a8e0-c1bed95b7510",
+                client_id: AZURE_APPLICATION_ID,
                 response_type: "id_token token",
                 response_mode: "fragment",
                 scope: "https://graph.microsoft.com/User.Read openid",

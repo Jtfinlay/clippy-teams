@@ -1,7 +1,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
-import { CallRecordingIcon, CloseIcon, PauseThickIcon, SendIcon } from '@fluentui/react-icons-northstar';
+import { CallRecordingIcon, ChevronEndIcon, CloseIcon, PauseThickIcon, SendIcon } from '@fluentui/react-icons-northstar';
 import axios, { CancelTokenSource } from 'axios';
 import { uploadVideo } from '../../utils/api';
 import * as teams from '../../utils/teams';
@@ -21,7 +21,8 @@ export enum VIDEO_STATE {
 export const SEGMENT_MAX_LENGTH = 10000;
 
 interface IOwnProps {
-    onClose: () => void,
+    close: () => void,
+    nextView: () => void,
 }
 
 export default function VideoClip(props: IOwnProps) {
@@ -48,7 +49,7 @@ export default function VideoClip(props: IOwnProps) {
             setError(response.error);
         } else {
             // do something animated to show success
-            props.onClose();
+            props.close();
         }
 
         setUploading(false);
@@ -101,7 +102,13 @@ export default function VideoClip(props: IOwnProps) {
                     <Button icon={<SendIcon/>} content={"Send Clip"} onClick={() => onSubmitVideo()} />
                 )}
                 <FlexItem push>
-                    <Button icon={<CloseIcon />} text iconOnly title="Close" onClick={props.onClose}/>
+                    <Button icon={<CloseIcon />} text iconOnly title="Close" onClick={props.close}/>
+                </FlexItem>
+            </Flex>
+
+            <Flex style={{ padding: '10px', bottom: 50, position: 'absolute', width: 'calc(100% - 20px)' }}>
+                <FlexItem push>
+                    <Button icon={<ChevronEndIcon/>} iconOnly title="Next" onClick={() => props.nextView()}/>
                 </FlexItem>
             </Flex>
 

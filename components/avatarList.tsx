@@ -8,12 +8,13 @@ import { IFetchUserResponse } from '../lib/storage';
 const avatarSize = { width: '4rem', height: '4rem' };
 
 interface IOwnProps {
-    createClippy: () => void,
+    viewLocalUser: () => void,
     viewUserClippy: (userId: string) => void,
     refresh: () => void,
     users: IFetchUserResponse[],
     error: string,
-    fetching: boolean
+    fetching: boolean,
+    localUserId: string
 }
 
 export default function AvatarList(props: IOwnProps) {
@@ -24,10 +25,18 @@ export default function AvatarList(props: IOwnProps) {
         name: u.displayName,
     }));
 
+    const localUser = props.users.find(u => u.id === props.localUserId);
+
     return (
         <Flex column>
             <Flex gap="gap.small">
-                <StoryAvatar owner image="/james.jpg" name="James" onClick={props.createClippy}/>
+                <StoryAvatar
+                    active={Boolean(localUser?.entries.length)}
+                    owner
+                    image={localUser?.photoUrl}
+                    name={localUser?.displayName}
+                    onClick={props.viewLocalUser}
+                />
 
                 {userData.map((u, i) => (
                     <StoryAvatar key={i} active {...u} onClick={() => props.viewUserClippy(u.id)} />

@@ -103,6 +103,33 @@ export async function getUser(authToken: string, userId: string): Promise<{resul
     }
 }
 
+export async function getLocalUser(authToken: string): Promise<{result?: IGraphUser, error?: AppError, statusCode: number}> {
+
+    try {
+        const response = await fetch(
+            `https://graph.microsoft.com/v1.0/me`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const json = await response.json();
+        if (response.status !== 200) {
+            return { error: json, statusCode: response.status };
+        }
+
+        return { result: json, statusCode: 200 };
+        
+    } catch (err) {
+        console.error(err.message);
+        return { error: { error: "Unknown failure", error_description: "Unknown failure. Please try again later."}, statusCode: 502 };
+    }
+}
+
+
 export async function getUserImage(authToken: string, userId: string): Promise<{result?: any, error?: AppError, statusCode: number}> {
 
     try {

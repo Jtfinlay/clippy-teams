@@ -4,7 +4,8 @@ import { CloseIcon, SendIcon } from '@fluentui/react-icons-northstar';
 import { fabric } from 'fabric';
 
 interface IOwnProps {
-    onClose: () => void,
+    close: () => void,
+    nextView: () => void,
 }
 
 export default function TextClip(props: IOwnProps) {

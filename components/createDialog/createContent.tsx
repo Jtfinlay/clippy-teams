@@ -4,7 +4,8 @@ import TextClip from './textClip';
 import VideoClip from './videoClip';
 
 interface IOwnProps {
-    close: () => void
+    close: () => void,
+    nextView: () => void,
 }
 
 export default function CreateContent(props: IOwnProps) {
@@ -12,13 +13,13 @@ export default function CreateContent(props: IOwnProps) {
 
     const mediaOptions = [
         {
-            component: <TextClip onClose={props.close} />,
+            component: <TextClip {...props} />,
             title: "Text"
         },
         {
-            component: <VideoClip onClose={props.close} />,
+            component: <VideoClip {...props} />,
             title: "Record"
-        }
+        },
     ];
 
     return (

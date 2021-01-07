@@ -3,25 +3,19 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { Box, Flex } from '@fluentui/react-northstar';
 import axios, { CancelTokenSource } from 'axios';
-import { fetchVideos } from '../utils/api';
+import { fetchUserInfo, fetchVideos } from '../utils/api';
 import AvatarList from './avatarList';
 import ClipDialog from './clipDialog';
-import CreateContent from './createDialog/createContent';
-import ViewContent from './viewDialog/viewContent';
 import * as teams from '../utils/teams';
 import styles from '../styles/Home.module.css'
-
-enum DIALOG_STATE {
-    CLOSED = 'closed',
-    VIEW = 'view',
-    CREATE = 'create'
-}
+import ClipView from './clipView';
 
 export default function Home() {
-    const [dialogState, setDialogState] = React.useState(DIALOG_STATE.CLOSED);
-    const [selectedUser, setSelectedUser] = React.useState('');
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [selectedView, setSelectedView] = React.useState('');
     const [fetching, setFetching] = React.useState(false);
     const [error, setError] = React.useState('');
+    const [localUserId, setLocalUserId] = React.useState('');
     const [users, setUsers] = React.useState([]);
     const cancelToken = React.useRef<CancelTokenSource>(axios.CancelToken.source());
 
@@ -30,17 +24,42 @@ export default function Home() {
 
         setFetching(true);
         setError('');
+
         const context = await teams.getContext();
         const authToken = await teams.getAuthToken();
+        const userResponse = await fetchUserInfo(authToken, context.tid, cancelToken.current.token);
+
+        if (userResponse.error) {
+            setError(userResponse.error);
+            setFetching(false);
+            return;
+        } else {
+            setLocalUserId(userResponse.result!.id);
+        }
+
         const response = await fetchVideos(authToken, context.tid, cancelToken.current.token);
         
         if (response.error) {
             setError(response.error);
         } else {
-            setUsers(response.result!.users);
+            const userList = response.result!.users;
+            if (!userList.find(u => u.id === userResponse.result!.id)) {
+                userList.push(userResponse.result!);
+            }
+            setUsers(userList);
         }
 
         setFetching(false);
+    }
+
+    function viewLocalUser() {
+        const localUser = users.find(u => u.id === localUserId);
+        if (localUser.entries.length > 0) {
+            setSelectedView('me');
+        } else {
+            setSelectedView('create');
+        }
+        setDialogOpen(true);
     }
 
     React.useEffect(() => {
@@ -60,26 +79,23 @@ export default function Home() {
             <main style={{ padding: '5rem 0', width: '60rem' }}>
                 <Flex column gap="gap.large" hAlign="center">
                     <AvatarList
-                        createClippy={() => setDialogState(DIALOG_STATE.CREATE)}
-                        viewUserClippy={(id) => { setSelectedUser(id); setDialogState(DIALOG_STATE.VIEW) }}
+                        viewLocalUser={() => viewLocalUser()}
+                        viewUserClippy={(id) => { setSelectedView(id); setDialogOpen(true) }}
                         refresh={() => refresh()}
                         users={users}
                         fetching={fetching}
                         error={error}
+                        localUserId={localUserId}
                     />
 
                     <Box>
-                        <ClipDialog open={dialogState === DIALOG_STATE.VIEW || dialogState === DIALOG_STATE.CREATE}>
-                            <>
-                                {dialogState === DIALOG_STATE.CREATE && <CreateContent close={() => setDialogState(DIALOG_STATE.CLOSED)}/>}
-                                {dialogState === DIALOG_STATE.VIEW && (
-                                    <ViewContent
-                                        close={() => setDialogState(DIALOG_STATE.CLOSED)}
-                                        users={users}
-                                        activeUser={selectedUser}
-                                    />
-                                )}
-                            </>
+                        <ClipDialog open={dialogOpen}>
+                            <ClipView
+                                close={() => setDialogOpen(false)}
+                                users={users}
+                                localUserId={localUserId}
+                                defaultIndex={selectedView}
+                            />
                         </ClipDialog>
                     </Box>
                 </Flex>

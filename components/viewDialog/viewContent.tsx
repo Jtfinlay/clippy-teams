@@ -6,18 +6,26 @@ import { IFetchUserResponse } from '../../lib/storage';
 
 interface IOwnProps {
     close: () => void,
-    users: IFetchUserResponse[],
-    activeUser: string
+    user: IFetchUserResponse,
+    nextUser: () => void,
+    prevUser: () => void,
 }
 
 export default function ViewContent(props: IOwnProps) {
     const [clipIndex, setClipIndex] = React.useState(0);
-    const user = props.users?.find(u => u.id === props.activeUser);
+
+    function prevVideo() {
+        if (clipIndex === 0) {
+            props.prevUser();
+            return;
+        }
+
+        setClipIndex(i => i-1);
+    }
 
     function nextVideo() {
-        if (clipIndex+1 > user.entries.length-1) {
-            // todo - go to next user if possible
-            props.close();
+        if (clipIndex+1 >= props.user.entries.length) {
+            props.nextUser();
             return;
         }
 
@@ -26,10 +34,10 @@ export default function ViewContent(props: IOwnProps) {
 
     return (
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
-            <VideoClip url={user.entries[clipIndex].sasUrl} />
+            <VideoClip url={props.user.entries[clipIndex].sasUrl} />
 
             <Flex style={{ padding: '10px', bottom: 50, position: 'absolute', width: 'calc(100% - 20px)' }}>
-                {clipIndex > 0 && <Button icon={<ChevronStartIcon/>} iconOnly title="Previous"/>}
+                <Button icon={<ChevronStartIcon/>} iconOnly title="Previous" onClick={() => prevVideo()}/>
                 <FlexItem push>
                     <Button icon={<ChevronEndIcon/>} iconOnly title="Next" onClick={() => nextVideo()}/>
                 </FlexItem>

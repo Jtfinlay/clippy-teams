@@ -210,12 +210,35 @@ export async function uploadBlob(tenantId: string, blobName: string, blob: BlobC
     await blockBlobClient.upload(blob.buffer, blob.size);
 }
 
+export async function fetchUserDetails(token: string, tenantId: string): Promise<IFetchUserResponse> {
+
+    // Get user details
+    // todo - better error handling?
+    const userResponse = await graph.getLocalUser(token);
+    const imageUrl = await getProfileImage(token, tenantId, userResponse.result.id);
+
+    const user: IFetchUserResponse = { id: userResponse.result.id, entries: [], displayName: userResponse.result.displayName, photoUrl: imageUrl };
+
+    const timeLimit = moment().subtract(1, 'days').valueOf().toString();
+    const query = new azure.TableQuery().top(30).where('PartitionKey eq ? and RowKey ge ?', user.id, timeLimit);
+    const entryResults = await getEntities<IEntryStorage>(getUploadTableName(tenantId), query);
+
+    // foreach entry, generate a sas token to blob storage
+    for (let j = 0; j < entryResults.length; j++) {
+        const entry = entryResults[j];
+        const sasUrl = await getBlobSasUri(tenantId, entry.BlobName._);
+        user.entries.push({ date: entry.RowKey._, sasUrl });
+    }
+
+    return user;
+}
+
 /**
  * Fetch the latest videos for the most recent 30 users in past day.
  */
 export async function fetchTableEntries(token: string, tenantId: string): Promise<IFetchEntriesResponse> {
     // Fetch top 30 users
-    let timeLimit = moment().subtract(1, 'days').valueOf().toString();
+    const timeLimit = moment().subtract(1, 'days').valueOf().toString();
     let query = new azure.TableQuery().top(30).where('PartitionKey ge ?', timeLimit);
     const users = await getEntities<IUserStorage>(getUserTableName(tenantId), query);
 
@@ -226,6 +249,7 @@ export async function fetchTableEntries(token: string, tenantId: string): Promis
         const user: IFetchUserResponse = { id: u.RowKey._, entries: [], displayName: '', photoUrl: '' };
 
         // Get user details
+        // todo - better error handling?
         const userResponse = await graph.getUser(token, user.id);
         const imageUrl = await getProfileImage(token, tenantId, user.id);
 

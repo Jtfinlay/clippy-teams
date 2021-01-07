@@ -38,7 +38,7 @@ export default function AvatarList(props: IOwnProps) {
                     onClick={props.viewLocalUser}
                 />
 
-                {userData.map((u, i) => (
+                {userData.filter(u => u.id !== props.localUserId).map((u, i) => (
                     <StoryAvatar key={i} active {...u} onClick={() => props.viewUserClippy(u.id)} />
                 ))}
 

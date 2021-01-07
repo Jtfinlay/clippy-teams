@@ -25,7 +25,7 @@ export default function ClipView(props: IOwnProps) {
         indices.push('me');
     }
 
-    props.users.forEach(u => {
+    props.users.filter(u => u.id !== props.localUserId).forEach(u => {
         indices.push(u.id);
     });
 

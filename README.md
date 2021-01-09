@@ -12,7 +12,7 @@ Uses Next.JS, start by setting up your [env variables](https://nextjs.org/docs/b
 AZURE_STORAGE_CONNECTION_STRING=UseDevelopmentStorage=true
 AZURE_STORAGE_ACCOUNT_NAME=devstoreaccount1
 AZURE_STORAGE_ACCOUNT_KEY=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==
-AZURE_APPLICATION_ID=<AppRegistrationId>
+NEXT_PUBLIC_AZURE_APPLICATION_ID=<AppRegistrationId>
 AZURE_APPLICATION_SECRET=<AppSecretId>
 ```
 

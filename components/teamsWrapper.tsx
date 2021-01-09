@@ -24,6 +24,7 @@ export default function TeamsWrapper(props: IOwnProps) {
                     let data =localStorage.getItem(result);
                     localStorage.removeItem(result);
                     res(data);
+                    setShowConsent(false);
                     setReady(true);
                 },
                 failureCallback: (reason) => {

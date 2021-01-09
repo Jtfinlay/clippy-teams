@@ -1,17 +1,19 @@
 import Head from 'next/head';
-import { Text } from '@fluentui/react-northstar';
+import { Flex, Text } from '@fluentui/react-northstar';
 
 export default function Terms() {
     return (
-        <div>
+        <Flex column hAlign="center" >
             <Head>
-                <title>Create Next App</title>
+                <title>Terms of Use</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main>
+            <Flex column hAlign="center" style={{ width:"100%", height:"100vh" }} gap="gap.small">
                 <Text content="Terms of Use" size="larger"/>
-            </main>
-        </div>
+                
+                <iframe src="/terms.html" width="100%" height="100%"/>
+            </Flex>
+        </Flex>
     )
 }

@@ -102,10 +102,10 @@ export default function Home() {
             <footer className={styles.footer}>
                 <Flex column>
                     <Flex gap="gap.small" hAlign="center">
-                        <Link href="/terms"><a>Terms of Use</a></Link>
-                        <Link href="/privacy"><a>Privacy</a></Link>
+                        <Link href="/terms"><a target="_blank">Terms of Use</a></Link>
+                        <Link href="/privacy"><a target="_blank">Privacy</a></Link>
                     </Flex>
-                    <Text>Clippies was made with ♥ by <Link href="https://twitter.com/JtFinlay"><a>@Jtfinlay</a></Link>. This application is open-source and available on <Link href="https://github.com/Jtfinlay/clippy-teams"><a>Github</a></Link>.</Text>
+                    <Text>Clippies was made with ♥ by <Link href="https://twitter.com/JtFinlay"><a target="_blank">@Jtfinlay</a></Link>. This application is open-source and available on <Link href="https://github.com/Jtfinlay/clippy-teams"><a target="_blank">Github</a></Link>.</Text>
                 </Flex>
             </footer>
         </Flex>

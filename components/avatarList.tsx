@@ -42,13 +42,13 @@ export default function AvatarList(props: IOwnProps) {
     }
 
     return (
-        <Flex column>
+        <Flex column style={{ maxWidth: '100%', padding: '10px', overflow: 'scroll' }}>
             <Flex gap="gap.small">
                 
                 {renderAddClippy()}
 
                 {userData.filter(u => Boolean(u.entries.length)).map((u, i) => (
-                    <StoryAvatar key={i} active {...u} onClick={() => props.viewUserClippy(u.id)} />
+                    <StoryAvatar active {...u} onClick={() => props.viewUserClippy(u.id)} />
                 ))}
 
                 {props.fetching && <Loader style={avatarSize} />}

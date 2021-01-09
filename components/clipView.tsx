@@ -4,6 +4,7 @@ import ViewContent from './viewDialog/viewContent';
 import { IFetchUserResponse } from '../lib/storage';
 
 interface IOwnProps {
+    success: () => void,
     close: () => void,
     users: IFetchUserResponse[],
     localUserId: string,
@@ -13,8 +14,6 @@ interface IOwnProps {
 export default function ClipView(props: IOwnProps) {
     const [index, setIndex] = React.useState(-1);
 
-    const localUser = props.users?.find(u => u.id === props.localUserId);
-
     React.useEffect(() => {
         setIndex(indices.findIndex(v => v === props.defaultIndex));
     }, []);
@@ -22,7 +21,7 @@ export default function ClipView(props: IOwnProps) {
     // Build a list of views [create, ...users]
     const indices = ['create'];
 
-    props.users.forEach(u => {
+    props.users.filter(u => Boolean(u.entries.length)).forEach(u => {
         indices.push(u.id);
     });
 
@@ -40,6 +39,7 @@ export default function ClipView(props: IOwnProps) {
             case 'create':
                 return (
                     <CreateContent
+                        success={props.success}
                         close={() => props.close()}
                         nextView={() => nextView()}
                     />

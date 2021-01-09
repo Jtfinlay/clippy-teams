@@ -86,6 +86,7 @@ export default function Home() {
                     <Box>
                         <ClipDialog open={dialogOpen}>
                             <ClipView
+                                success={() => { setDialogOpen(false); refresh(); }}
                                 close={() => setDialogOpen(false)}
                                 users={users}
                                 localUserId={localUserId}

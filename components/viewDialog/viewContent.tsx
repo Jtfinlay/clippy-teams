@@ -46,7 +46,7 @@ export default function ViewContent(props: IOwnProps) {
                 </Flex>
 
                 <FlexItem push>
-                    <Button icon={<CloseIcon />} text iconOnly title="Close" onClick={props.close}/>
+                    <Button icon={<CloseIcon />} text iconOnly title="Close" onClick={props.close} style={{ color: 'white' }}/>
                 </FlexItem>
             </Flex>
 

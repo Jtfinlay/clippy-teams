@@ -6,6 +6,7 @@ import VideoClip from './videoClip';
 interface IOwnProps {
     close: () => void,
     nextView: () => void,
+    success: () => void,
 }
 
 export default function CreateContent(props: IOwnProps) {

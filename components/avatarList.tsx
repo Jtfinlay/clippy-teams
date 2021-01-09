@@ -24,18 +24,19 @@ export default function AvatarList(props: IOwnProps) {
         id: u.id,
         image: u.photoUrl,
         name: u.displayName,
+        entries: u.entries,
     }));
 
     const localUser = props.users.find(u => u.id === props.localUserId);
 
-    function renderLocalUserActions() {
+    function renderAddClippy() {
         if (Boolean(localUser?.entries.length)) {
             return (
                 <AddClippyAvatar onClick={() => props.addClippy()} />
             );
         } else {
             return (
-                <StoryAvatar owner image={localUser?.photoUrl} name={localUser?.displayName} onClick={() => props.addClippy}/>
+                <StoryAvatar owner image={localUser?.photoUrl} name={localUser?.displayName} onClick={() => props.addClippy()}/>
             );
         }
     }
@@ -44,9 +45,9 @@ export default function AvatarList(props: IOwnProps) {
         <Flex column>
             <Flex gap="gap.small">
                 
-                {renderLocalUserActions()}
+                {renderAddClippy()}
 
-                {userData.map((u, i) => (
+                {userData.filter(u => Boolean(u.entries.length)).map((u, i) => (
                     <StoryAvatar key={i} active {...u} onClick={() => props.viewUserClippy(u.id)} />
                 ))}
 

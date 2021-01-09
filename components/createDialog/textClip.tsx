@@ -7,6 +7,7 @@ import * as teams from '../../utils/teams';
 import { uploadImage } from '../../utils/api';
 
 interface IOwnProps {
+    success: () => void,
     close: () => void,
     nextView: () => void,
 }
@@ -37,7 +38,7 @@ export default function TextClip(props: IOwnProps) {
             setError(response.error);
         } else {
             // do something animated to show success
-            props.close();
+            props.success();
         }
 
         setUploading(false);

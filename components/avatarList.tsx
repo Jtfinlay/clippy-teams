@@ -4,11 +4,12 @@ import { SyncIcon } from '@fluentui/react-icons-northstar'
 import StoryAvatar from './storyAvatar';
 import Boop from './boop';
 import { IFetchUserResponse } from '../lib/storage';
+import AddClippyAvatar from './addClippyAvatar';
 
 const avatarSize = { width: '4rem', height: '4rem' };
 
 interface IOwnProps {
-    viewLocalUser: () => void,
+    addClippy: () => void,
     viewUserClippy: (userId: string) => void,
     refresh: () => void,
     users: IFetchUserResponse[],
@@ -27,18 +28,25 @@ export default function AvatarList(props: IOwnProps) {
 
     const localUser = props.users.find(u => u.id === props.localUserId);
 
+    function renderLocalUserActions() {
+        if (Boolean(localUser?.entries.length)) {
+            return (
+                <AddClippyAvatar onClick={() => props.addClippy()} />
+            );
+        } else {
+            return (
+                <StoryAvatar owner image={localUser?.photoUrl} name={localUser?.displayName} onClick={() => props.addClippy}/>
+            );
+        }
+    }
+
     return (
         <Flex column>
             <Flex gap="gap.small">
-                <StoryAvatar
-                    active={Boolean(localUser?.entries.length)}
-                    owner
-                    image={localUser?.photoUrl}
-                    name={localUser?.displayName}
-                    onClick={props.viewLocalUser}
-                />
+                
+                {renderLocalUserActions()}
 
-                {userData.filter(u => u.id !== props.localUserId).map((u, i) => (
+                {userData.map((u, i) => (
                     <StoryAvatar key={i} active {...u} onClick={() => props.viewUserClippy(u.id)} />
                 ))}
 

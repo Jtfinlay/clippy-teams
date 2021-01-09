@@ -19,13 +19,10 @@ export default function ClipView(props: IOwnProps) {
         setIndex(indices.findIndex(v => v === props.defaultIndex));
     }, []);
 
-    // Build a list of views [create, localUserVideo, ...otherUsers]
+    // Build a list of views [create, ...users]
     const indices = ['create'];
-    if (Boolean(localUser.entries.length)) {
-        indices.push('me');
-    }
 
-    props.users.filter(u => u.id !== props.localUserId).forEach(u => {
+    props.users.forEach(u => {
         indices.push(u.id);
     });
 
@@ -45,15 +42,6 @@ export default function ClipView(props: IOwnProps) {
                     <CreateContent
                         close={() => props.close()}
                         nextView={() => nextView()}
-                    />
-                );
-            case 'me': 
-                return (
-                    <ViewContent
-                        close={props.close}
-                        user={localUser}
-                        prevUser={() => setIndex(i => i-1)}
-                        nextUser={() => nextView()}
                     />
                 );
             default:

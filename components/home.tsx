@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Box, Flex } from '@fluentui/react-northstar';
+import { Box, Flex, Text } from '@fluentui/react-northstar';
 import axios, { CancelTokenSource } from 'axios';
 import { fetchUserInfo, fetchContent } from '../utils/api';
 import AvatarList from './avatarList';
@@ -43,24 +43,14 @@ export default function Home() {
         if (response.error) {
             setError(response.error);
         } else {
-            const userList = response.result!.users;
-            if (!userList.find(u => u.id === userResponse.result!.id)) {
-                userList.push(userResponse.result!);
-            }
+            // Ensure local user is at the start of the array.
+            let userList = response.result!.users;
+            userList = userList.filter(u => u.id !== userResponse.result!.id);
+            userList.unshift(userResponse.result!);
             setUsers(userList);
         }
 
         setFetching(false);
-    }
-
-    function viewLocalUser() {
-        const localUser = users.find(u => u.id === localUserId);
-        if (localUser.entries.length > 0) {
-            setSelectedView('me');
-        } else {
-            setSelectedView('create');
-        }
-        setDialogOpen(true);
     }
 
     React.useEffect(() => {
@@ -84,7 +74,7 @@ export default function Home() {
             <main style={{ padding: '5rem 0', width: '60rem' }}>
                 <Flex column gap="gap.large" hAlign="center">
                     <AvatarList
-                        viewLocalUser={() => viewLocalUser()}
+                        addClippy={() => { setSelectedView('create'); setDialogOpen(true); }}
                         viewUserClippy={(id) => { setSelectedView(id); setDialogOpen(true) }}
                         refresh={() => refresh()}
                         users={users}
@@ -110,9 +100,12 @@ export default function Home() {
             </main>
 
             <footer className={styles.footer}>
-                <Flex gap="gap.small">
-                    <Link href="/terms"><a>Terms of Use</a></Link>
-                    <Link href="/privacy"><a>Privacy</a></Link>
+                <Flex column>
+                    <Flex gap="gap.small" hAlign="center">
+                        <Link href="/terms"><a>Terms of Use</a></Link>
+                        <Link href="/privacy"><a>Privacy</a></Link>
+                    </Flex>
+                    <Text>Clippies was made with ♥ by <Link href="https://twitter.com/JtFinlay"><a>@Jtfinlay</a></Link>. This application is open-source and available on <Link href="https://github.com/Jtfinlay/clippy-teams"><a>Github</a></Link>.</Text>
                 </Flex>
             </footer>
         </Flex>

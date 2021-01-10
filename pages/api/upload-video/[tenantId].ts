@@ -73,6 +73,7 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse) => 
         const caller = await graph.getCaller(graphToken);
 
         // Create a unique name for the blob
+        // TODO - iPhone won't send webm
         const blobName = `${uuidv4()}.webm`;
 
         await uploadBlob(tenantId, blobName, blob);

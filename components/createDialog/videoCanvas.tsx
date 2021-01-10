@@ -7,6 +7,8 @@ import useDisplayDimensions from '../hooks/useDisplayDimensions';
 const CAMERA_OPTIONS = {
     audio: true,
     video: {
+        width: 500,
+        height: 750,
         facingMode: "user"
     }
 };
@@ -34,7 +36,7 @@ export default function VideoCanvas(props: IOwnProps) {
                 chunks.push(e.data);
             };
             recorderRef.current.onstop = () => {
-                let blob = new Blob(chunks);
+                let blob = new Blob(chunks, { type: recorderRef.current.mimeType });
                 let blobUrl = URL.createObjectURL(blob);
                 props.onPlayback(blob);
 
@@ -139,7 +141,7 @@ export default function VideoCanvas(props: IOwnProps) {
     
     return (
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
-            <video ref={videoRef} autoPlay controls muted playsInline loop width={width} height={height} style={{ display: 'none'}}></video>
+            <video ref={videoRef} autoPlay muted playsInline loop width={width} height={height} style={{ display: 'none'}}></video>
             <canvas ref={canvasRef} width={width} height={height}/>
         </Box>
     );

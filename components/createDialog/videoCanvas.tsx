@@ -7,8 +7,6 @@ import useDisplayDimensions from '../hooks/useDisplayDimensions';
 const CAMERA_OPTIONS = {
     audio: true,
     video: {
-        width: 500,
-        height: 750,
         facingMode: "user"
     }
 };
@@ -88,11 +86,17 @@ export default function VideoCanvas(props: IOwnProps) {
         videoRef.current.addEventListener('loadedmetadata', () => {
             // Whenever video src changes, check to see if we need to scale the video to fit the canvas.
             // This solves some issues where during playback, recorded video has different size and preview is cropped.
+
+            // todo - this only works if aspect ratio is wider than target aspect ratio. Need to handle case where skinnier, to prevent vertical bars on sides.
+
+            const scale = height / videoRef.current.videoHeight;
+
             videoRef.current.width = videoRef.current.videoWidth;
             videoRef.current.height = videoRef.current.videoHeight;
-            playback.set({ width: videoRef.current.videoWidth, height: videoRef.current.videoHeight });
-            playback.scaleToHeight(height);
-            playback.scaleToWidth(width);
+
+            const left = -1 * (videoRef.current.videoWidth * scale - width) / 2;
+            playback.set({ left, width: videoRef.current.videoWidth, height: videoRef.current.videoHeight});
+            playback.scale(scale);
         });
 
         const fetchWebcam = async () => {

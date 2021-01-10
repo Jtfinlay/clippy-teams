@@ -7,11 +7,15 @@ import axios, { CancelTokenSource } from 'axios';
 import { fetchUserInfo, fetchContent } from '../utils/api';
 import AvatarList from './avatarList';
 import ClipDialog from './clipDialog';
-import * as teams from '../utils/teams';
 import styles from '../styles/Home.module.css'
 import ClipView from './clipView';
 
-export default function Home() {
+interface IOwnProps {
+    tenantId: string,
+    getAuthToken: () => Promise<string>,
+}
+
+export default function Home(props: IOwnProps) {
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [selectedView, setSelectedView] = React.useState('');
     const [fetching, setFetching] = React.useState(false);
@@ -26,9 +30,8 @@ export default function Home() {
         setFetching(true);
         setError('');
 
-        const context = await teams.getContext();
-        const authToken = await teams.getAuthToken();
-        const userResponse = await fetchUserInfo(authToken, context.tid, cancelToken.current.token);
+        const authToken = await props.getAuthToken();
+        const userResponse = await fetchUserInfo(authToken, props.tenantId, cancelToken.current.token);
 
         if (userResponse.error) {
             setError(userResponse.error);
@@ -38,7 +41,7 @@ export default function Home() {
             setLocalUserId(userResponse.result!.id);
         }
 
-        const response = await fetchContent(authToken, context.tid, cancelToken.current.token);
+        const response = await fetchContent(authToken, props.tenantId, cancelToken.current.token);
         
         if (response.error) {
             setError(response.error);
@@ -86,6 +89,7 @@ export default function Home() {
                     <Box>
                         <ClipDialog open={dialogOpen}>
                             <ClipView
+                                {...props}
                                 success={() => { setDialogOpen(false); refresh(); }}
                                 close={() => setDialogOpen(false)}
                                 users={users}

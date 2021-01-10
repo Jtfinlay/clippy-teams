@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import jwt_decode, { JwtPayload } from 'jwt-decode';
 import { fetchUserDetails } from '../../../lib/storage';
 import * as graph from '../../../lib/graph';
 
@@ -9,7 +10,6 @@ import * as graph from '../../../lib/graph';
  * Tenant Id required.
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-
     const clientToken = req.headers.authorization;
     const { query: { tenantId } } = req;
 
@@ -18,14 +18,24 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return res.end();
     }
 
+    let graphToken = clientToken;
+
+    // If we access directly from web, we can use the web token and skip the behalf_of check. Using scp to identify web & teams tokens.
+    const decoded = jwt_decode<JwtPayload & { scp: string}>(clientToken);
+    const skipServerAuth = decoded.scp !== "access_as_user";
+
     try {
-        const token = await graph.getServerSideToken(clientToken, tenantId);
-        if (token.error) {
-            res.statusCode = 401;
-            return res.end();
+        if (!skipServerAuth) {
+            const token = await graph.getServerSideToken(clientToken, tenantId);
+            if (token.error) {
+                res.statusCode = 401;
+                return res.end();
+            }
+
+            graphToken = token.result.access_token;
         }
         
-        const response = await fetchUserDetails(token.result.access_token, tenantId);
+        const response = await fetchUserDetails(graphToken, tenantId);
 
         res.statusCode = 200;
         res.json(response);

@@ -3,10 +3,11 @@ import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
 import { CloseIcon, SendIcon } from '@fluentui/react-icons-northstar';
 import axios, { CancelTokenSource } from 'axios';
 import { fabric } from 'fabric';
-import * as teams from '../../utils/teams';
 import { uploadImage } from '../../utils/api';
 
 interface IOwnProps {
+    tenantId: string,
+    getAuthToken: () => Promise<string>,
     success: () => void,
     close: () => void,
     nextView: () => void,
@@ -24,8 +25,7 @@ export default function TextClip(props: IOwnProps) {
         setUploading(true);
         setError('');
 
-        const context = await teams.getContext();
-        const authToken = await teams.getAuthToken();
+        const authToken = await props.getAuthToken();
 
         const blob = await new Promise<any>((res, rej) => {
             canvasRef.current!.toBlob((blob) => {
@@ -33,7 +33,7 @@ export default function TextClip(props: IOwnProps) {
             });
         });
 
-        const response = await uploadImage(authToken, context.tid, blob, cancelToken.current.token);
+        const response = await uploadImage(authToken, props.tenantId, blob, cancelToken.current.token);
         if (response.error) {
             setError(response.error);
         } else {

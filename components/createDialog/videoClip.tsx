@@ -4,7 +4,6 @@ import { Box, Button, Flex, FlexItem } from '@fluentui/react-northstar';
 import { CallRecordingIcon, ChevronEndIcon, CloseIcon, PauseThickIcon, SendIcon } from '@fluentui/react-icons-northstar';
 import axios, { CancelTokenSource } from 'axios';
 import { uploadVideo } from '../../utils/api';
-import * as teams from '../../utils/teams';
 
 // VideoCanvas uses webcam, which needs browser apis
 const VideoCanvas = dynamic(
@@ -21,6 +20,8 @@ export enum VIDEO_STATE {
 export const SEGMENT_MAX_LENGTH = 10000;
 
 interface IOwnProps {
+    tenantId: string,
+    getAuthToken: () => Promise<string>,
     success: () => void,
     close: () => void,
     nextView: () => void,
@@ -43,9 +44,8 @@ export default function VideoClip(props: IOwnProps) {
         setUploading(true);
         setError('');
 
-        const context = await teams.getContext();
-        const authToken = await teams.getAuthToken();
-        const response = await uploadVideo(authToken, context.tid, blob, cancelToken.current.token);
+        const authToken = await props.getAuthToken();
+        const response = await uploadVideo(authToken, props.tenantId, blob, cancelToken.current.token);
         if (response.error) {
             setError(response.error);
         } else {

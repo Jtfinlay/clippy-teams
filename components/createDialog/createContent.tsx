@@ -4,6 +4,8 @@ import TextClip from './textClip';
 import VideoClip from './videoClip';
 
 interface IOwnProps {
+    tenantId: string,
+    getAuthToken: () => Promise<string>,
     close: () => void,
     nextView: () => void,
     success: () => void,
@@ -19,7 +21,7 @@ export default function CreateContent(props: IOwnProps) {
         },
         {
             component: <VideoClip {...props} />,
-            title: "Record"
+            title: "Video"
         },
     ];
 

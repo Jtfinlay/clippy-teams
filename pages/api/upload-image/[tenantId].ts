@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import jwt_decode, { JwtPayload } from 'jwt-decode';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import initMiddleware from '../../../lib/init-middleware';
@@ -46,6 +47,12 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse) => 
         return res.end();
     }
 
+    let graphToken = clientToken;
+
+    // If we access directly from web, we can use the web token and skip the behalf_of check. Using scp to identify web & teams tokens.
+    const decoded = jwt_decode<JwtPayload & { scp: string}>(clientToken);
+    const skipServerAuth = decoded.scp !== "access_as_user";
+
     const blob: BlobCorrected = req.files[0];
 
     try {
@@ -53,13 +60,17 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse) => 
         // Right now we just accept what is passed in, which could lead to storage/security/integrity issues.
         // Note that Multer limits to 1MB file size by default
 
-        const token = await graph.getServerSideToken(clientToken, tenantId);
-        if (token.error) {
-            res.statusCode = 401;
-            return res.end();
+        if (!skipServerAuth) {
+            const token = await graph.getServerSideToken(clientToken, tenantId);
+            if (token.error) {
+                res.statusCode = 401;
+                return res.end();
+            }
+
+            graphToken = token.result.access_token;
         }
 
-        const caller = await graph.getCaller(token.result.access_token);
+        const caller = await graph.getCaller(graphToken);
 
         // Create a unique name for the blob
         const blobName = `${uuidv4()}.png`;

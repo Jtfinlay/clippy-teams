@@ -4,6 +4,8 @@ import ViewContent from './viewDialog/viewContent';
 import { IFetchUserResponse } from '../lib/storage';
 
 interface IOwnProps {
+    tenantId: string,
+    getAuthToken: () => Promise<string>,
     success: () => void,
     close: () => void,
     users: IFetchUserResponse[],
@@ -39,15 +41,14 @@ export default function ClipView(props: IOwnProps) {
             case 'create':
                 return (
                     <CreateContent
-                        success={props.success}
-                        close={() => props.close()}
+                        {...props}
                         nextView={() => nextView()}
                     />
                 );
             default:
                 return (
                     <ViewContent
-                        close={props.close}
+                        {...props}
                         user={props.users.find(u => u.id === indices[index])}
                         prevUser={() => setIndex(i => i-1)}
                         nextUser={() => nextView()}

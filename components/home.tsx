@@ -74,7 +74,7 @@ export default function Home(props: IOwnProps) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main style={{ padding: '5rem 0', width: '60rem' }}>
+            <main style={{ padding: '5rem 0', maxWidth: '60rem' }}>
                 <Flex column gap="gap.large" hAlign="center">
                     <AvatarList
                         addClippy={() => { setSelectedView('create'); setDialogOpen(true); }}

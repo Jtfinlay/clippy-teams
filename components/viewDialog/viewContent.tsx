@@ -35,7 +35,7 @@ export default function ViewContent(props: IOwnProps) {
     const clip = props.user.entries[clipIndex];
 
     return (
-        <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
+        <Box style={{ width: '100%', display: 'inline-block', position: 'relative'}} >
             <Clippy url={clip.sasUrl} type={clip.fileType}/>
 
             <Flex gap="gap.small" style={{ padding: '10px', top: 0, position: 'absolute', width: '100%', background: 'linear-gradient(#3d3d3e, #3d3d3e00)' }}>

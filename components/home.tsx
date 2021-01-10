@@ -100,6 +100,8 @@ export default function Home(props: IOwnProps) {
                     </Box>
 
                     <Image width={250} height={250} src="/clippy.gif"/>
+                    <br/>
+                    <Text>Notice: Expect a broken experience on Safari / iOS for now.</Text>
                 </Flex>
 
             </main>

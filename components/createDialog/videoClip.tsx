@@ -113,7 +113,6 @@ export default function VideoClip(props: IOwnProps) {
                 </FlexItem>
             </Flex>
 
-            
             <Flex hAlign="center" style={{ padding: '10px', bottom: '10%', position: 'absolute', width: 'calc(100% - 20px)' }}>
                 {showPrimaryAction && (
                     <Button

@@ -2,6 +2,7 @@ import React from 'react';
 import { Box } from '@fluentui/react-northstar';
 import { fabric } from 'fabric';
 import { VIDEO_STATE } from './videoClip';
+import useDisplayDimensions from '../hooks/useDisplayDimensions';
 
 const CAMERA_OPTIONS = {
     audio: true,
@@ -22,6 +23,7 @@ export default function VideoCanvas(props: IOwnProps) {
     const recorderRef = React.useRef(null);
     const canvasRef = React.useRef(null);
     const videoRef = React.useRef(null);
+    const [width, height] = useDisplayDimensions();
 
     React.useEffect(() => {
         if (!recorderRef.current || !props.recordState) return;
@@ -89,8 +91,8 @@ export default function VideoCanvas(props: IOwnProps) {
             videoRef.current.width = videoRef.current.videoWidth;
             videoRef.current.height = videoRef.current.videoHeight;
             playback.set({ width: videoRef.current.videoWidth, height: videoRef.current.videoHeight });
-            playback.scaleToHeight(750);
-            playback.scaleToWidth(500);
+            playback.scaleToHeight(height);
+            playback.scaleToWidth(width);
         });
 
         const fetchWebcam = async () => {
@@ -133,8 +135,8 @@ export default function VideoCanvas(props: IOwnProps) {
     
     return (
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
-            <video ref={videoRef} autoPlay muted playsInline loop width="500" height="750" style={{ display: 'none'}}></video>
-            <canvas ref={canvasRef} width="500" height="750"/>
+            <video ref={videoRef} autoPlay muted playsInline loop width={width} height={height} style={{ display: 'none'}}></video>
+            <canvas ref={canvasRef} width={width} height={height}/>
         </Box>
     );
 }

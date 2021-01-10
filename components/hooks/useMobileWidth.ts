@@ -1,4 +1,3 @@
-import React from 'react';
 import useWindowDimensions from './useWindowDimensions';
 
 export default function useMobileWidth() {

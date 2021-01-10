@@ -4,6 +4,7 @@ import { CloseIcon, SendIcon } from '@fluentui/react-icons-northstar';
 import axios, { CancelTokenSource } from 'axios';
 import { fabric } from 'fabric';
 import { uploadImage } from '../../utils/api';
+import useDisplayDimensions from '../hooks/useDisplayDimensions';
 
 interface IOwnProps {
     tenantId: string,
@@ -17,6 +18,7 @@ export default function TextClip(props: IOwnProps) {
     const canvasRef = React.useRef(null);
     const [uploading, setUploading] = React.useState(false);
     const cancelToken = React.useRef<CancelTokenSource>(axios.CancelToken.source());
+    const [width, height] = useDisplayDimensions();
     const [error, setError] = React.useState('');
 
     async function onSubmitImage() {
@@ -49,8 +51,8 @@ export default function TextClip(props: IOwnProps) {
 
         canvas.setBackgroundColor('#698ec6', () => {});
         const textbox = new fabric.Textbox("What's on your mind?", {
-            left: 100,
-            top: 300,
+            left: (width-300)/2,
+            top: height/2-100,
             width: 300,
             fontSize: 28,
             fill: '#fff',
@@ -76,7 +78,7 @@ export default function TextClip(props: IOwnProps) {
     return (
         <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
             <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
-                <canvas width="500px" height="750px" ref={canvasRef}/>
+                <canvas width={width} height={height} ref={canvasRef}/>
             </Box>
             <Flex style={{ padding: '10px', top: 0, position: 'absolute', width: 'calc(100% - 20px)' }}>
                 <Button icon={<SendIcon/>} content={"Send Clip"} onClick={() => onSubmitImage()}/>

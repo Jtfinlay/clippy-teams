@@ -95,7 +95,7 @@ export default function VideoClip(props: IOwnProps) {
     }, [cancelToken]);
 
     return (
-        <Box style={{ width: '100%', height: '100%', display: 'inline-block', position: 'relative'}} >
+        <Box style={{ width: '100%', display: 'inline-block', position: 'relative'}} >
             <VideoCanvas recordState={videoState} onPlayback={blob => setBlob(blob)} />
 
             <Flex style={{ padding: '10px', top: 0, position: 'absolute', width: 'calc(100% - 20px)' }}>

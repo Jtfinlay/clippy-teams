@@ -22,7 +22,7 @@ export async function getServerSideToken(clientSideToken: string, tenantId: stri
     const AZURE_APPLICATION_ID = process.env.NEXT_PUBLIC_AZURE_APPLICATION_ID;
     const AZURE_APPLICATION_SECRET = process.env.AZURE_APPLICATION_SECRET;
 
-    const scopes = ["https://graph.microsoft.com/User.Read"];
+    const scopes = ["https://graph.microsoft.com/User.Read", "User.Read", "User.ReadBasic.All"];
 
     const formData = new URLSearchParams();
     formData.append("client_id", AZURE_APPLICATION_ID);

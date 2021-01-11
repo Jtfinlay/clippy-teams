@@ -22,7 +22,8 @@ export default function WebWrapper(props: IOwnProps) {
         redirectUri: window.location.origin + "/web",
         scopes: [
             'User.Read',
-            'openid'
+            'User.ReadBasic.All',
+            'openid',
         ]
     };
 
@@ -68,7 +69,7 @@ export default function WebWrapper(props: IOwnProps) {
                 const response = await msal.getUserProfile(msalApplication.current, config.scopes);
                 setTenantId(accounts[0].tenantId);
                 setIsAuthenticated(response.isAuthenticated);
-                setError(response.error);
+                setError("??");
             }
         }
 

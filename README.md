@@ -32,8 +32,8 @@ Generate certificates for NextJS to run as https:
 
 ```
 $cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname dev.clippy.team
-$path = `cert:\localMachine\my\' + $cert.thumbprint
-$pwd = ConvertTo-SecureString -String `password123' -Force -AsPlainTex
+$path = 'cert:\localMachine\my\' + $cert.thumbprint
+$pwd = ConvertTo-SecureString -String 'password123' -Force -AsPlainText
 Export-PfxCertificate -cert $path -FilePath c:\certs\devcert.pfx -Password $pwd
 ```
 
